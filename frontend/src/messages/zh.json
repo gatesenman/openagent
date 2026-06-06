@@ -157,6 +157,59 @@
     "installed": "已安装",
     "install": "安装"
   },
+  "batch": {
+    "title": "批量会话",
+    "description": "拆分大任务为子 Agent 并行执行",
+    "create": "创建批量任务",
+    "tasks": "子任务",
+    "completed": "已完成",
+    "running": "运行中",
+    "pending": "等待中"
+  },
+  "membership": {
+    "title": "成员管理",
+    "description": "管理组织成员和角色权限 (Enterprise → Organization → Team)",
+    "invite": "邀请成员",
+    "name": "名称",
+    "email": "邮箱",
+    "role": "角色",
+    "lastActive": "最后活跃",
+    "edit": "编辑"
+  },
+  "billing": {
+    "title": "计费管理",
+    "currentPlan": "当前计划",
+    "acuUsed": "ACU 已用",
+    "billingCycle": "计费周期",
+    "renewsOn": "续费日期",
+    "pricing": "价格档位",
+    "usageHistory": "使用记录"
+  },
+  "cicd": {
+    "title": "CI/CD 流水线",
+    "description": "管理持续集成和持续部署流水线",
+    "createPipeline": "创建流水线",
+    "success": "成功",
+    "running": "运行中",
+    "failed": "失败"
+  },
+  "snapshots": {
+    "title": "环境快照",
+    "description": "管理 Devbox 环境快照，加速会话启动",
+    "build": "构建快照",
+    "ready": "就绪",
+    "building": "构建中",
+    "failed": "失败"
+  },
+  "schedules": {
+    "title": "调度管理",
+    "description": "配置定时任务，让 Agent 自动执行周期性工作",
+    "create": "创建调度",
+    "active": "活跃",
+    "paused": "已暂停",
+    "lastRun": "上次运行",
+    "nextRun": "下次运行"
+  },
   "apikeys": {
     "title": "API Keys",
     "description": "管理 Service Users 和 API 访问凭证",

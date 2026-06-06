@@ -43,6 +43,48 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 - **中英双语** — 默认中文界面，支持英文切换（next-intl）
 - **沙箱隔离** — 每个 Session 独立 Docker 容器，安全隔离
 
+### 界面截图
+
+#### 主页 — 三模式选择 & 会话管理
+
+![OpenAgent 主页](docs/screenshots/home.png)
+
+#### DeepWiki — 符号级代码文档
+
+![DeepWiki 文档](docs/screenshots/deepwiki.png)
+
+#### CodeMap — 代码结构可视化
+
+![CodeMap 可视化](docs/screenshots/codemap.png)
+
+#### 知识库 — 三层知识体系 (System / User / Repo)
+
+![知识库管理](docs/screenshots/knowledge.png)
+
+#### 任务模板 (Playbooks)
+
+![任务模板](docs/screenshots/playbooks.png)
+
+#### 分析面板
+
+![分析面板](docs/screenshots/analytics.png)
+
+#### CI/CD 流水线
+
+![CI/CD](docs/screenshots/cicd.png)
+
+#### 调度管理
+
+![调度管理](docs/screenshots/schedules.png)
+
+#### 环境快照
+
+![环境快照](docs/screenshots/snapshots.png)
+
+#### 设置
+
+![设置](docs/screenshots/settings.png)
+
 ### 技术栈
 
 | 层 | 技术 |

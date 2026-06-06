@@ -157,6 +157,59 @@
     "installed": "Installed",
     "install": "Install"
   },
+  "batch": {
+    "title": "Batch Sessions",
+    "description": "Split large tasks into sub-Agents for parallel execution",
+    "create": "Create Batch",
+    "tasks": "tasks",
+    "completed": "Completed",
+    "running": "Running",
+    "pending": "Pending"
+  },
+  "membership": {
+    "title": "Membership",
+    "description": "Manage organization members and role permissions (Enterprise → Organization → Team)",
+    "invite": "Invite Member",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "lastActive": "Last Active",
+    "edit": "Edit"
+  },
+  "billing": {
+    "title": "Billing",
+    "currentPlan": "Current Plan",
+    "acuUsed": "ACU Used",
+    "billingCycle": "Billing Cycle",
+    "renewsOn": "Renews on",
+    "pricing": "Pricing Tiers",
+    "usageHistory": "Usage History"
+  },
+  "cicd": {
+    "title": "CI/CD Pipelines",
+    "description": "Manage continuous integration and deployment pipelines",
+    "createPipeline": "Create Pipeline",
+    "success": "Success",
+    "running": "Running",
+    "failed": "Failed"
+  },
+  "snapshots": {
+    "title": "Environment Snapshots",
+    "description": "Manage Devbox environment snapshots for faster session startup",
+    "build": "Build Snapshot",
+    "ready": "Ready",
+    "building": "Building",
+    "failed": "Failed"
+  },
+  "schedules": {
+    "title": "Schedules",
+    "description": "Configure scheduled tasks for Agent to run periodically",
+    "create": "Create Schedule",
+    "active": "Active",
+    "paused": "Paused",
+    "lastRun": "Last Run",
+    "nextRun": "Next Run"
+  },
   "apikeys": {
     "title": "API Keys",
     "description": "Manage Service Users and API access credentials",
