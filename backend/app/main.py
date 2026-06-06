@@ -16,6 +16,7 @@ from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
 from app.protocols.jsonrpc import JsonRpcRequest, JsonRpcResponse
+from app.protocols.a2a import a2a_server, openagent_card
 from app.protocols.mcp import mcp_server
 from app.sandbox.manager import sandbox_manager
 
@@ -220,8 +221,54 @@ async def protocols_status():
             },
             {
                 "name": "A2A",
-                "status": "planned",
-                "version": "Phase 2",
+                "status": "active",
+                "version": "0.2.2",
+                "endpoint": "/a2a/rpc",
+                "agent_card": "/.well-known/agent.json",
             },
         ],
     }
+
+
+# ==================== A2A 协议端点 ====================
+
+
+@app.get("/.well-known/agent.json")
+async def agent_card():
+    """A2A Agent Card — Agent 能力声明.
+
+    外部 Agent 通过此端点发现 OpenAgent 的能力。
+    """
+    return a2a_server.get_agent_card()
+
+
+@app.post("/a2a/rpc")
+async def a2a_rpc_handler(request: dict):
+    """A2A JSON-RPC 端点.
+
+    处理 Agent 间协作请求:
+    - tasks/send: 接收任务
+    - tasks/get: 查询任务状态
+    - tasks/cancel: 取消任务
+    """
+    method = request.get("method", "")
+    params = request.get("params", {})
+    req_id = request.get("id")
+
+    try:
+        if method == "tasks/send":
+            result = await a2a_server.handle_send(params)
+        elif method == "tasks/get":
+            result = await a2a_server.handle_get(params)
+        elif method == "tasks/cancel":
+            result = await a2a_server.handle_cancel(params)
+        else:
+            return JsonRpcResponse.failure(
+                req_id, -32601, f"方法不存在: {method}"
+            ).to_dict()
+
+        return JsonRpcResponse.success(req_id, result).to_dict()
+    except Exception as e:
+        return JsonRpcResponse.failure(
+            req_id, -32603, f"A2A 处理异常: {e}"
+        ).to_dict()
