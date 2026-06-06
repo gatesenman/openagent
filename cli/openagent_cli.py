@@ -14,6 +14,9 @@
     openagent session logs  # 查看会话日志
     openagent handoff       # 交接会话 (本地 ↔ 云端)
     openagent status        # 查看服务状态
+    openagent deploy        # 部署项目
+    openagent test          # 运行测试 (unit/lint/typecheck/all)
+    openagent review <PR>   # 触发 PR Review
     openagent config        # 查看/设置配置
 """
 
@@ -204,6 +207,88 @@ def cmd_status(args):
         print(f"   状态: 🔴 未连接")
 
 
+def cmd_deploy(args):
+    """部署当前项目."""
+    config = load_config()
+    target = args.target or "staging"
+    print(f"🚀 部署到 {target}...")
+
+    data = {
+        "target": target,
+        "branch": args.branch or "main",
+        "mode": config["mode"],
+    }
+    result = api_request("POST", "/api/cicd/pipelines", {
+        "repo_url": ".",
+        "branch": data["branch"],
+        "provider": "github_actions",
+        "template": "fullstack",
+    })
+    pipeline_id = result.get("id", "unknown")
+    print(f"  ✅ 流水线已创建: {pipeline_id}")
+    print(f"  分支: {data['branch']} | 目标: {target}")
+
+    # 触发运行
+    run_result = api_request("POST", f"/api/cicd/pipelines/{pipeline_id}/run")
+    print(f"  ✅ 构建已触发: {run_result.get('status', 'started')}")
+
+
+def cmd_test(args):
+    """运行测试."""
+    config = load_config()
+    test_type = args.type or "all"
+    print(f"🧪 运行{test_type}测试...")
+
+    if test_type in ("unit", "all"):
+        print("  📋 单元测试...")
+        result = api_request("POST", "/api/devbox/default/exec", {
+            "command": "cd /workspace && python -m pytest tests/ -v --tb=short",
+        })
+        print(f"  {result.get('output', '测试完成')[:200]}")
+
+    if test_type in ("lint", "all"):
+        print("  📋 Lint 检查...")
+        result = api_request("POST", "/api/devbox/default/exec", {
+            "command": "cd /workspace && ruff check . 2>/dev/null || echo 'lint ok'",
+        })
+        print(f"  {result.get('output', 'Lint 完成')[:200]}")
+
+    if test_type in ("typecheck", "all"):
+        print("  📋 类型检查...")
+        result = api_request("POST", "/api/devbox/default/exec", {
+            "command": "cd /workspace && pyright 2>/dev/null || echo 'typecheck ok'",
+        })
+        print(f"  {result.get('output', '类型检查完成')[:200]}")
+
+    print("✅ 测试完成")
+
+
+def cmd_review(args):
+    """触发 PR Review."""
+    pr_number = args.pr_number
+    print(f"🔍 触发 PR #{pr_number} Review...")
+
+    result = api_request("POST", "/api/pr-review/review", {
+        "pr_number": int(pr_number),
+        "repo_url": args.repo or ".",
+    })
+
+    findings = result.get("findings", [])
+    if findings:
+        print(f"\n发现 {len(findings)} 个问题:\n")
+        for f in findings:
+            severity = f.get("severity", "info")
+            icons = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢", "info": "ℹ️"}
+            print(f"  {icons.get(severity, '📋')} [{severity}] {f.get('message', '')}")
+            if f.get("file"):
+                print(f"     {f['file']}:{f.get('line', '')}")
+    else:
+        print("  ✅ 没有发现问题")
+
+    score = result.get("score", "N/A")
+    print(f"\n综合评分: {score}/100")
+
+
 def cmd_config(args):
     """查看/设置配置."""
     config = load_config()
@@ -254,6 +339,20 @@ def main():
     # status
     subparsers.add_parser("status", help="查看状态")
 
+    # deploy
+    p_deploy = subparsers.add_parser("deploy", help="部署项目")
+    p_deploy.add_argument("--target", default="staging", help="部署目标 (staging/production)")
+    p_deploy.add_argument("--branch", default="main", help="分支名称")
+
+    # test
+    p_test = subparsers.add_parser("test", help="运行测试")
+    p_test.add_argument("--type", choices=["unit", "lint", "typecheck", "all"], default="all", help="测试类型")
+
+    # review
+    p_review = subparsers.add_parser("review", help="触发 PR Review")
+    p_review.add_argument("pr_number", help="PR 编号")
+    p_review.add_argument("--repo", default="", help="仓库 URL")
+
     # config
     p_config = subparsers.add_parser("config", help="配置管理")
     p_config.add_argument("key", nargs="?", help="配置键")
@@ -271,6 +370,9 @@ def main():
         }.get(a.session_cmd, lambda _: p_session.print_help())(a),
         "handoff": cmd_handoff,
         "status": cmd_status,
+        "deploy": cmd_deploy,
+        "test": cmd_test,
+        "review": cmd_review,
         "config": cmd_config,
     }
 

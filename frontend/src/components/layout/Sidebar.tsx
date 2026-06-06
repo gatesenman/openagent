@@ -20,6 +20,9 @@ const navItems = [
   { key: "apikeys", href: "/api-keys", icon: "🔐" },
   { key: "membership", href: "/membership", icon: "👥" },
   { key: "billing", href: "/billing", icon: "💰" },
+  { key: "cicd", href: "/cicd", icon: "🔄" },
+  { key: "snapshots", href: "/snapshots", icon: "📦" },
+  { key: "schedules", href: "/schedules", icon: "🕐" },
   { key: "analytics", href: "/analytics", icon: "📊" },
   { key: "settings", href: "/settings", icon: "⚙️" },
 ];

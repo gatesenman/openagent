@@ -14,8 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (agents, analytics, apikeys, audit, auth, automations,
     batch, billing, blueprints, cicd, codemaps, deepwiki, devbox,
     events, git, knowledge, mcp_market, memory, notifications,
-    orgs, playbooks, pr_review, repos, secrets, sessions, skills,
-    tools, worklog)
+    orgs, playbooks, pr_review, repos, schedules, secrets,
+    sessions, skills, snapshots, sso, tools, worklog)
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
@@ -89,6 +89,9 @@ app.include_router(orgs.router, prefix="/api/orgs", tags=["orgs"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(batch.router, prefix="/api/batch", tags=["batch"])
 app.include_router(cicd.router, prefix="/api/cicd", tags=["cicd"])
+app.include_router(snapshots.router, prefix="/api/snapshots", tags=["snapshots"])
+app.include_router(schedules.router, prefix="/api/schedules", tags=["schedules"])
+app.include_router(sso.router, prefix="/api/sso", tags=["sso"])
 
 
 @app.get("/")

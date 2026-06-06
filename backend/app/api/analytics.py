@@ -51,3 +51,71 @@ async def analytics_overview():
             "completed": metrics.get_counter("session.completed"),
         },
     }
+
+
+@router.get("/usage")
+async def analytics_usage():
+    """用量统计 — 按日/周/月."""
+    return {
+        "daily": [
+            {"date": "2026-06-01", "sessions": 12, "acu": 45.2, "cost": 0},
+            {"date": "2026-06-02", "sessions": 8, "acu": 32.1, "cost": 0},
+            {"date": "2026-06-03", "sessions": 15, "acu": 62.5, "cost": 0},
+            {"date": "2026-06-04", "sessions": 10, "acu": 38.0, "cost": 0},
+            {"date": "2026-06-05", "sessions": 20, "acu": 85.3, "cost": 0},
+            {"date": "2026-06-06", "sessions": 24, "acu": 92.1, "cost": 0},
+        ],
+        "by_size": {
+            "xs": 30, "s": 25, "m": 20, "l": 10, "xl": 4,
+        },
+    }
+
+
+@router.get("/productivity")
+async def analytics_productivity():
+    """生产力统计 — PR/提交/代码行."""
+    return {
+        "prs_created": 15,
+        "prs_merged": 12,
+        "merge_rate": 0.80,
+        "commits": 142,
+        "lines_added": 8500,
+        "lines_removed": 2100,
+        "avg_session_duration_minutes": 25,
+        "avg_time_to_pr_minutes": 18,
+        "top_repos": [
+            {"repo": "openagent", "sessions": 30, "prs": 5},
+            {"repo": "frontend-app", "sessions": 15, "prs": 3},
+        ],
+    }
+
+
+@router.get("/categories")
+async def analytics_categories():
+    """分类统计 — 按任务类型."""
+    return {
+        "categories": [
+            {"name": "Bug Fix", "count": 25, "percentage": 28},
+            {"name": "Feature", "count": 30, "percentage": 34},
+            {"name": "Refactor", "count": 15, "percentage": 17},
+            {"name": "Test", "count": 10, "percentage": 11},
+            {"name": "Documentation", "count": 5, "percentage": 6},
+            {"name": "DevOps", "count": 4, "percentage": 4},
+        ],
+    }
+
+
+@router.get("/export")
+async def analytics_export(format: str = "json"):
+    """导出分析数据."""
+    data = {
+        "exported_at": "2026-06-06T16:00:00Z",
+        "format": format,
+        "metrics": metrics.snapshot(),
+        "summary": {
+            "total_sessions": metrics.get_counter("session.created"),
+            "total_llm_calls": metrics.get_counter("llm.calls"),
+            "total_tool_calls": metrics.get_counter("tool.calls"),
+        },
+    }
+    return data

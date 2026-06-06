@@ -29,7 +29,9 @@
     "membership": "成员管理",
     "billing": "计费",
     "batch": "批量会话",
-    "cicd": "CI/CD"
+    "cicd": "CI/CD",
+    "snapshots": "环境快照",
+    "schedules": "调度管理"
   },
   "session": {
     "title": "会话",

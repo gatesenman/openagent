@@ -639,3 +639,136 @@ def test_cicd_service():
     templates = svc.get_templates()
     assert "python" in templates
     assert "node" in templates
+
+
+def test_snapshot_service():
+    from app.services.snapshot_service import snapshot_service
+
+    # 构建快照
+    snap = snapshot_service.build_snapshot(
+        org_id="org-1",
+        blueprint_id="bp-1",
+        repo_id="repo-1",
+        name="test-snapshot",
+    )
+    assert snap.status.value == "ready"
+    assert snap.size_bytes > 0
+
+    # 查询
+    detail = snapshot_service.get_snapshot(snap.id)
+    assert detail is not None
+    assert detail["name"] == "test-snapshot"
+
+    # 列表
+    snaps = snapshot_service.list_snapshots(org_id="org-1")
+    assert len(snaps) >= 1
+
+    # 恢复
+    result = snapshot_service.restore_snapshot(snap.id, "session-1")
+    assert result is not None
+    assert result["status"] == "restored"
+
+    # 删除
+    assert snapshot_service.delete_snapshot(snap.id)
+    assert snapshot_service.get_snapshot(snap.id) is None
+
+
+def test_schedule_service():
+    from app.services.schedule_service import schedule_service
+
+    # 创建
+    sched = schedule_service.create_schedule(
+        org_id="org-1",
+        name="daily-update",
+        prompt="更新依赖并运行测试",
+        schedule_type="cron",
+        cron_expression="0 9 * * *",
+    )
+    assert sched.name == "daily-update"
+    assert sched.schedule_type.value == "cron"
+
+    # 查询
+    detail = schedule_service.get_schedule(sched.id)
+    assert detail is not None
+    assert detail["cron_expression"] == "0 9 * * *"
+
+    # 列表
+    scheds = schedule_service.list_schedules(org_id="org-1")
+    assert len(scheds) >= 1
+
+    # 触发
+    run = schedule_service.trigger_run(sched.id)
+    assert run is not None
+    assert run.status == "completed"
+
+    # 获取运行记录
+    runs = schedule_service.get_runs(sched.id)
+    assert len(runs) == 1
+
+    # 暂停/恢复
+    assert schedule_service.pause_schedule(sched.id)
+    detail2 = schedule_service.get_schedule(sched.id)
+    assert detail2["status"] == "paused"
+    assert schedule_service.resume_schedule(sched.id)
+
+    # 删除
+    assert schedule_service.delete_schedule(sched.id)
+
+
+def test_sso_service():
+    from app.services.sso_service import sso_service
+
+    # 创建 SAML 配置
+    cfg = sso_service.create_config(
+        org_id="org-1",
+        provider="saml",
+        name="Okta SAML",
+        entity_id="https://example.okta.com",
+        sso_url="https://example.okta.com/sso",
+    )
+    assert cfg.provider.value == "saml"
+
+    # 查询
+    detail = sso_service.get_config(cfg.id)
+    assert detail is not None
+    assert detail["name"] == "Okta SAML"
+
+    # 列表
+    configs = sso_service.list_configs(org_id="org-1")
+    assert len(configs) >= 1
+
+    # 测试连接
+    test_result = sso_service.test_connection(cfg.id)
+    assert test_result["success"]
+
+    # 激活
+    assert sso_service.activate(cfg.id)
+    detail2 = sso_service.get_config(cfg.id)
+    assert detail2["status"] == "active"
+
+    # 发起登录
+    login = sso_service.initiate_login(cfg.id)
+    assert login is not None
+    assert login["type"] == "redirect"
+
+    # 回调
+    session = sso_service.handle_callback(cfg.id, saml_response="test")
+    assert session is not None
+    assert session.token
+
+    # 创建 OIDC 配置
+    cfg2 = sso_service.create_config(
+        org_id="org-1",
+        provider="oidc",
+        name="Google OIDC",
+        client_id="google-client-id",
+        issuer_url="https://accounts.google.com",
+    )
+    assert cfg2.provider.value == "oidc"
+    sso_service.activate(cfg2.id)
+    login2 = sso_service.initiate_login(cfg2.id)
+    assert "authorize" in login2["url"]
+
+    # 删除
+    assert sso_service.delete_config(cfg.id)
+    assert sso_service.delete_config(cfg2.id)

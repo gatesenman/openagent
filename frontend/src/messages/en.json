@@ -29,7 +29,9 @@
     "membership": "Membership",
     "billing": "Billing",
     "batch": "Batch Sessions",
-    "cicd": "CI/CD"
+    "cicd": "CI/CD",
+    "snapshots": "Snapshots",
+    "schedules": "Schedules"
   },
   "session": {
     "title": "Sessions",

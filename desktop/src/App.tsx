@@ -49,6 +49,7 @@ export default function App() {
   const [platform, setPlatform] = useState<PlatformInfo | null>(null);
   const [health, setHealth] = useState<string>("checking");
   const [mode, setMode] = useState<string>("localhost");
+  const [activeTab, setActiveTab] = useState<string>("sessions");
 
   useEffect(() => {
     // 初始化
@@ -128,11 +129,11 @@ export default function App() {
             flexDirection: "column",
           }}
         >
-          <SidebarItem icon="💬" label="会话" active />
-          <SidebarItem icon="📚" label="知识库" />
-          <SidebarItem icon="📖" label="Playbooks" />
-          <SidebarItem icon="📊" label="分析" />
-          <SidebarItem icon="⚙️" label="设置" />
+          <SidebarItem icon="💬" label="会话" active={activeTab === "sessions"} onClick={() => setActiveTab("sessions")} />
+          <SidebarItem icon="📚" label="知识库" active={activeTab === "knowledge"} onClick={() => setActiveTab("knowledge")} />
+          <SidebarItem icon="📖" label="Playbooks" active={activeTab === "playbooks"} onClick={() => setActiveTab("playbooks")} />
+          <SidebarItem icon="📊" label="分析" active={activeTab === "analytics"} onClick={() => setActiveTab("analytics")} />
+          <SidebarItem icon="⚙️" label="设置" active={activeTab === "settings"} onClick={() => setActiveTab("settings")} />
           <div style={{ flex: 1 }} />
 
           {/* Mode switcher */}
@@ -173,68 +174,12 @@ export default function App() {
         </nav>
 
         {/* Content area */}
-        <main
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 40,
-          }}
-        >
-          <div style={{ textAlign: "center", maxWidth: 500 }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🤖</div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-              OpenAgent Desktop
-            </h1>
-            <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
-              AI 驱动的全生命周期软件开发平台
-              <br />
-              所有开发操作在隔离虚拟环境中执行
-            </p>
-
-            <button
-              style={{
-                padding: "10px 24px",
-                backgroundColor: "#3b82f6",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              + 新建会话
-            </button>
-
-            <div
-              style={{
-                marginTop: 32,
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gap: 12,
-                textAlign: "left",
-              }}
-            >
-              <FeatureCard
-                icon="🐳"
-                title="Docker 沙箱"
-                desc="每个会话独立容器"
-              />
-              <FeatureCard
-                icon="🧠"
-                title="多模型路由"
-                desc="GPT-4o / DeepSeek / Qwen"
-              />
-              <FeatureCard
-                icon="🔄"
-                title="模式切换"
-                desc="本地 ↔ 云端无缝交接"
-              />
-            </div>
-          </div>
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          {activeTab === "sessions" && <SessionsView mode={mode} apiUrl={config?.api_url || "http://localhost:8000"} />}
+          {activeTab === "knowledge" && <PlaceholderView title="知识库" desc="管理项目知识、最佳实践和约定" icon="📚" />}
+          {activeTab === "playbooks" && <PlaceholderView title="Playbooks" desc="任务模板和工作流程" icon="📖" />}
+          {activeTab === "analytics" && <PlaceholderView title="分析" desc="会话用量、生产力和成本统计" icon="📊" />}
+          {activeTab === "settings" && <SettingsView config={config} />}
         </main>
       </div>
 
@@ -265,13 +210,16 @@ function SidebarItem({
   icon,
   label,
   active,
+  onClick,
 }: {
   icon: string;
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
+      onClick={onClick}
       style={{
         display: "flex",
         alignItems: "center",
@@ -292,27 +240,122 @@ function SidebarItem({
   );
 }
 
-function FeatureCard({
-  icon,
-  title,
-  desc,
-}: {
-  icon: string;
-  title: string;
-  desc: string;
-}) {
+function FeatureCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
-    <div
-      style={{
-        padding: 12,
-        backgroundColor: "#111127",
-        borderRadius: 8,
-        border: "1px solid #1e1e3a",
-      }}
-    >
+    <div style={{ padding: 12, backgroundColor: "#111127", borderRadius: 8, border: "1px solid #1e1e3a" }}>
       <div style={{ fontSize: 20, marginBottom: 4 }}>{icon}</div>
       <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{title}</div>
       <div style={{ fontSize: 11, color: "#666" }}>{desc}</div>
+    </div>
+  );
+}
+
+function SessionsView({ mode, apiUrl }: { mode: string; apiUrl: string }) {
+  const [sessions] = useState([
+    { id: "s1", title: "修复登录bug", status: "running", model: "deepseek-v3", created: "2026-06-06 15:30" },
+    { id: "s2", title: "添加用户配置页", status: "completed", model: "gpt-4o", created: "2026-06-06 14:00" },
+    { id: "s3", title: "重构数据层", status: "paused", model: "qwen-72b", created: "2026-06-06 12:20" },
+  ]);
+
+  const statusColors: Record<string, string> = { running: "#10b981", completed: "#3b82f6", paused: "#eab308", failed: "#ef4444" };
+  const statusLabels: Record<string, string> = { running: "运行中", completed: "已完成", paused: "已暂停", failed: "失败" };
+
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600 }}>会话 ({mode})</h2>
+        <button style={{ padding: "6px 16px", backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
+          + 新建会话
+        </button>
+      </div>
+
+      {sessions.length === 0 ? (
+        <div style={{ textAlign: "center", paddingTop: 60 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🤖</div>
+          <p style={{ color: "#888" }}>暂无会话，点击新建开始</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {sessions.map((s) => (
+            <div key={s.id} style={{ padding: 12, backgroundColor: "#111127", borderRadius: 6, border: "1px solid #1e1e3a", cursor: "pointer" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 500 }}>{s.title}</span>
+                  <span style={{ marginLeft: 8, fontSize: 10, padding: "1px 6px", borderRadius: 3, backgroundColor: `${statusColors[s.status]}20`, color: statusColors[s.status] }}>
+                    {statusLabels[s.status]}
+                  </span>
+                </div>
+                <span style={{ fontSize: 11, color: "#666" }}>{s.model}</span>
+              </div>
+              <div style={{ fontSize: 10, color: "#555", marginTop: 4 }}>{s.created}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+        <FeatureCard icon="🐳" title="Docker 沙箱" desc="每个会话独立容器" />
+        <FeatureCard icon="🧠" title="多模型路由" desc="GPT-4o / DeepSeek / Qwen" />
+        <FeatureCard icon="🔄" title="模式切换" desc="本地 ↔ 云端无缝交接" />
+      </div>
+    </div>
+  );
+}
+
+function SettingsView({ config }: { config: AppConfig | null }) {
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: 24 }}>
+      <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>设置</h2>
+      <div style={{ display: "grid", gap: 16, maxWidth: 500 }}>
+        <SettingGroup title="通用">
+          <SettingRow label="API 地址" value={config?.api_url || "http://localhost:8000"} />
+          <SettingRow label="语言" value={config?.language || "zh"} />
+          <SettingRow label="主题" value={config?.theme || "dark"} />
+        </SettingGroup>
+        <SettingGroup title="模型">
+          <SettingRow label="默认模型" value="auto (智能路由)" />
+          <SettingRow label="备选模型" value="deepseek-v3, gpt-4o, qwen-72b" />
+        </SettingGroup>
+        <SettingGroup title="沙箱">
+          <SettingRow label="平台" value="ubuntu-22.04" />
+          <SettingRow label="CPU" value="4 cores" />
+          <SettingRow label="内存" value="8 GB" />
+          <SettingRow label="磁盘" value="50 GB" />
+        </SettingGroup>
+        <SettingGroup title="安全">
+          <SettingRow label="RBAC" value="admin" />
+          <SettingRow label="命令拦截" value="启用" />
+          <SettingRow label="网络过滤" value="Allowlist" />
+        </SettingGroup>
+      </div>
+    </div>
+  );
+}
+
+function SettingGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ backgroundColor: "#111127", borderRadius: 8, border: "1px solid #1e1e3a", padding: 16 }}>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: "#aaa" }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function SettingRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid #1e1e3a" }}>
+      <span style={{ fontSize: 12, color: "#888" }}>{label}</span>
+      <span style={{ fontSize: 12 }}>{value}</span>
+    </div>
+  );
+}
+
+function PlaceholderView({ title, desc, icon }: { title: string; desc: string; icon: string }) {
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontSize: 48, marginBottom: 16 }}>{icon}</div>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{title}</h2>
+      <p style={{ color: "#888", fontSize: 13 }}>{desc}</p>
     </div>
   );
 }

@@ -551,3 +551,125 @@ def test_cicd_api(client):
 
     resp = client.get("/api/cicd/templates")
     assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Snapshot API
+# ---------------------------------------------------------------------------
+
+def test_snapshot_api(client):
+    resp = client.post("/api/snapshots/build", json={
+        "org_id": "org1", "blueprint_id": "bp1", "name": "test-snap"
+    })
+    assert resp.status_code == 200
+    snap_id = resp.json()["id"]
+
+    resp = client.get("/api/snapshots/")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/snapshots/{snap_id}")
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "test-snap"
+
+    resp = client.post(f"/api/snapshots/{snap_id}/restore", json={"session_id": "s1"})
+    assert resp.status_code == 200
+
+    resp = client.delete(f"/api/snapshots/{snap_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Schedule API
+# ---------------------------------------------------------------------------
+
+def test_schedule_api(client):
+    resp = client.post("/api/schedules/", json={
+        "org_id": "org1",
+        "name": "daily-test",
+        "prompt": "run tests",
+        "schedule_type": "cron",
+        "cron_expression": "0 9 * * *",
+    })
+    assert resp.status_code == 200
+    sched_id = resp.json()["id"]
+
+    resp = client.get("/api/schedules/")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/schedules/{sched_id}")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/schedules/{sched_id}/trigger")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/schedules/{sched_id}/runs")
+    assert resp.status_code == 200
+    assert len(resp.json()["runs"]) >= 1
+
+    resp = client.post(f"/api/schedules/{sched_id}/pause")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/schedules/{sched_id}/resume")
+    assert resp.status_code == 200
+
+    resp = client.delete(f"/api/schedules/{sched_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# SSO API
+# ---------------------------------------------------------------------------
+
+def test_sso_api(client):
+    resp = client.post("/api/sso/configs", json={
+        "org_id": "org1",
+        "provider": "saml",
+        "name": "Test SSO",
+        "sso_url": "https://sso.example.com",
+    })
+    assert resp.status_code == 200
+    cfg_id = resp.json()["id"]
+
+    resp = client.get("/api/sso/configs")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/sso/configs/{cfg_id}")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/sso/configs/{cfg_id}/test")
+    assert resp.status_code == 200
+    assert resp.json()["success"]
+
+    resp = client.post(f"/api/sso/configs/{cfg_id}/activate")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/sso/configs/{cfg_id}/login")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/sso/callback/{cfg_id}", json={"saml_response": "test"})
+    assert resp.status_code == 200
+
+    resp = client.delete(f"/api/sso/configs/{cfg_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Analytics Extended API
+# ---------------------------------------------------------------------------
+
+def test_analytics_extended(client):
+    resp = client.get("/api/analytics/usage")
+    assert resp.status_code == 200
+    assert "daily" in resp.json()
+
+    resp = client.get("/api/analytics/productivity")
+    assert resp.status_code == 200
+    assert "prs_created" in resp.json()
+
+    resp = client.get("/api/analytics/categories")
+    assert resp.status_code == 200
+    assert "categories" in resp.json()
+
+    resp = client.get("/api/analytics/export?format=json")
+    assert resp.status_code == 200
+    assert "exported_at" in resp.json()
