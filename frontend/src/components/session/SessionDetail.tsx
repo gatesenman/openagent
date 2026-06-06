@@ -6,11 +6,12 @@ import { cn } from "@/lib/utils";
 import { ChangesPanel } from "./ChangesPanel";
 import { ChatPanel } from "./ChatPanel";
 import { DesktopPanel } from "./DesktopPanel";
+import { EditorPanel } from "./EditorPanel";
 import { WorklogPanel } from "./WorklogPanel";
 import { TerminalPanel } from "./TerminalPanel";
 import type { Message } from "@/lib/api";
 
-const tabs = ["chat", "worklog", "terminal", "changes", "desktop"] as const;
+const tabs = ["chat", "worklog", "terminal", "editor", "changes", "desktop"] as const;
 type TabKey = (typeof tabs)[number];
 
 interface SessionDetailProps {
@@ -82,8 +83,9 @@ export function SessionDetail({ sessionId }: SessionDetailProps) {
         {activeTab === "terminal" && (
           <TerminalPanel sessionId={sessionId} />
         )}
+        {activeTab === "editor" && <EditorPanel sessionId={sessionId} />}
         {activeTab === "changes" && <ChangesPanel />}
-        {activeTab === "desktop" && <DesktopPanel />}
+        {activeTab === "desktop" && <DesktopPanel sessionId={sessionId} />}
       </div>
     </div>
   );

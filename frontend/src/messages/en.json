@@ -42,6 +42,7 @@
       "chat": "Chat",
       "worklog": "Worklog",
       "terminal": "Terminal",
+      "editor": "Editor",
       "changes": "Changes",
       "desktop": "Desktop"
     },

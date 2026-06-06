@@ -379,3 +379,97 @@ def test_repos_crud(client):
 
     resp = client.delete(f"/api/repos/{repo_id}")
     assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Memory API
+# ---------------------------------------------------------------------------
+
+def test_memory_crud(client):
+    resp = client.post("/api/memory/", json={
+        "content": "User prefers ruff for linting",
+        "category": "preference",
+    })
+    assert resp.status_code == 200
+    memory_id = resp.json()["id"]
+
+    resp = client.get("/api/memory/")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/memory/{memory_id}/promote")
+    assert resp.status_code == 200
+    assert resp.json()["tier"] == "long"
+
+    resp = client.get("/api/memory/stats")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# PR Review API
+# ---------------------------------------------------------------------------
+
+def test_pr_review(client):
+    diff_text = '''diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,2 +1,3 @@
++password = "hardcoded123"
+ import os
+'''
+    resp = client.post("/api/pr-review/review", json={
+        "pr_id": "test-pr-1",
+        "repo": "test/repo",
+        "diff": diff_text,
+    })
+    assert resp.status_code == 200
+    assert resp.json()["issues_found"] >= 1
+
+    resp = client.get("/api/pr-review/rules/list")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Notifications API
+# ---------------------------------------------------------------------------
+
+def test_notifications(client):
+    resp = client.get("/api/notifications/")
+    assert resp.status_code == 200
+
+    resp = client.get("/api/notifications/channels")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Worklog API
+# ---------------------------------------------------------------------------
+
+def test_worklog_api(client):
+    # 记录
+    resp = client.post("/api/worklog/test-session", json={
+        "category": "think",
+        "title": "分析需求",
+        "detail": "用户需要登录模块",
+    })
+    assert resp.status_code == 200
+    entry_id = resp.json()["id"]
+
+    # 时间线
+    resp = client.get("/api/worklog/test-session")
+    assert resp.status_code == 200
+    assert len(resp.json()["timeline"]) >= 1
+
+    # 摘要
+    resp = client.get("/api/worklog/test-session/summary")
+    assert resp.status_code == 200
+
+    # 回放
+    resp = client.post("/api/worklog/test-session/replay/start", json={})
+    assert resp.status_code == 200
+
+    resp = client.get("/api/worklog/test-session/replay/next")
+    assert resp.status_code == 200
+
+    resp = client.post("/api/worklog/test-session/replay/stop")
+    assert resp.status_code == 200

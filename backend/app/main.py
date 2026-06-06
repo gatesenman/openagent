@@ -13,7 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (agents, analytics, apikeys, audit, auth, automations,
     blueprints, codemaps, deepwiki, devbox, events, git, knowledge,
-    mcp_market, playbooks, repos, secrets, sessions, skills, tools)
+    mcp_market, memory, notifications, playbooks, pr_review,
+    repos, secrets, sessions, skills, tools, worklog)
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
@@ -79,6 +80,10 @@ app.include_router(skills.router, prefix="/api/skills", tags=["skills"])
 app.include_router(apikeys.router, prefix="/api/api-keys", tags=["api-keys"])
 app.include_router(audit.router, prefix="/api/audit", tags=["audit"])
 app.include_router(repos.router, prefix="/api/repos", tags=["repos"])
+app.include_router(memory.router, prefix="/api/memory", tags=["memory"])
+app.include_router(pr_review.router, prefix="/api/pr-review", tags=["pr-review"])
+app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
+app.include_router(worklog.router, prefix="/api/worklog", tags=["worklog"])
 
 
 @app.get("/")

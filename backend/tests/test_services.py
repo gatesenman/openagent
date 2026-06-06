@@ -402,3 +402,121 @@ def test_model_router():
     # 成本预估
     estimate = router.estimate_cost("add a comment")
     assert estimate["estimated_cost"] > 0
+
+
+def test_memory_service():
+    from app.services.memory_service import MemoryService
+
+    svc = MemoryService()
+
+    # 记忆
+    m1 = svc.remember("用户习惯使用 ruff 做 lint", session_id="s1", category="preference")
+    m2 = svc.remember("项目使用 pnpm 而非 npm", session_id="s1", category="convention")
+    svc.remember("临时变量", session_id="s1", tier="short", importance=0.1)
+
+    # 检索
+    results = svc.recall(session_id="s1")
+    assert len(results) == 3
+
+    results = svc.recall(query="ruff")
+    assert len(results) == 1
+
+    # 提升
+    svc.promote(m1.id)
+    assert svc._memories[m1.id].tier == "working"
+
+    # 自动发现
+    discovered = svc.auto_discover("always use TypeScript strict mode", session_id="s2")
+    assert len(discovered) >= 1
+
+    # 统计
+    stats = svc.get_stats()
+    assert stats["total"] >= 3
+
+
+def test_pr_review_service():
+    from app.services.pr_review_service import PRReviewService
+
+    svc = PRReviewService()
+
+    diff = '''diff --git a/app.py b/app.py
+--- a/app.py
++++ b/app.py
+@@ -1,3 +1,5 @@
++api_key = "sk-1234567890abcdef"
++result = eval(user_input)
+ import os
+'''
+    result = svc.review_diff("pr-1", "test/repo", diff)
+    assert result.issues_found >= 1
+    assert result.risk_level.value in ("medium", "high", "critical")
+
+    # 规则列表
+    rules = svc.list_rules()
+    assert len(rules) >= 5
+
+
+def test_notification_service():
+    import asyncio
+    from app.services.notification_service import NotificationService
+
+    svc = NotificationService()
+
+    # 发送
+    loop = asyncio.new_event_loop()
+    sent = loop.run_until_complete(
+        svc.send("u1", "会话完成", body="PR已创建", level="success")
+    )
+    loop.close()
+    assert len(sent) == 1
+
+    # 获取
+    notifs = svc.get_notifications("u1")
+    assert len(notifs) == 1
+    assert notifs[0]["title"] == "会话完成"
+
+    # 标记已读
+    svc.mark_read(sent[0].id)
+    unread = svc.get_notifications("u1", unread_only=True)
+    assert len(unread) == 0
+
+
+def test_worklog_service():
+    from app.services.worklog_service import WorklogService
+
+    svc = WorklogService()
+
+    # 记录
+    e1 = svc.log("s1", "think", "分析用户需求", detail="需要实现登录模块")
+    e2 = svc.log("s1", "command", "执行 grep 搜索", duration_ms=150)
+    e3 = svc.log("s1", "milestone", "完成代码编写")
+
+    # 时间线
+    timeline = svc.get_timeline("s1")
+    assert len(timeline) == 3
+
+    # 按类别过滤
+    filtered = svc.get_timeline("s1", category="think")
+    assert len(filtered) == 1
+
+    # 注释
+    svc.annotate(e1.id, "s1", "关键决策点")
+    timeline = svc.get_timeline("s1")
+    annotated = [t for t in timeline if t["annotations"]]
+    assert len(annotated) == 1
+
+    # 摘要
+    summary = svc.get_summary("s1")
+    assert summary["total_entries"] == 3
+
+    # 里程碑
+    milestones = svc.extract_milestones("s1")
+    assert len(milestones) >= 1
+
+    # 回放
+    svc.start_replay("s1")
+    event = svc.replay_next("s1")
+    assert event is not None
+    assert event["index"] == 1
+
+    svc.stop_replay("s1")
