@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, codemaps, deepwiki, knowledge, playbooks, sessions, tools
+from app.api import agents, analytics, auth, codemaps, deepwiki, events, knowledge, playbooks, sessions, tools
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
@@ -64,6 +64,9 @@ app.include_router(deepwiki.router, prefix="/api/deepwiki", tags=["deepwiki"])
 app.include_router(codemaps.router, prefix="/api/codemaps", tags=["codemaps"])
 app.include_router(knowledge.router, prefix="/api/knowledge", tags=["knowledge"])
 app.include_router(playbooks.router, prefix="/api/playbooks", tags=["playbooks"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(events.router, prefix="/api/events", tags=["events"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
 
 
 @app.get("/")

@@ -16,12 +16,22 @@
     "deepwiki": "DeepWiki",
     "codemaps": "CodeMap",
     "settings": "设置",
-    "newSession": "新建会话"
+    "newSession": "新建会话",
+    "knowledge": "知识库",
+    "playbooks": "任务模板",
+    "analytics": "分析"
   },
   "session": {
     "title": "会话",
     "newSession": "新建会话",
     "noSessions": "暂无会话，点击新建开始",
+    "info": "会话信息",
+    "status": "状态",
+    "running": "运行中",
+    "mode": "运行模式",
+    "model": "模型",
+    "platform": "平台",
+    "tools": "可用工具",
     "tabs": {
       "chat": "对话",
       "worklog": "工作日志",
@@ -29,14 +39,14 @@
       "changes": "变更",
       "desktop": "桌面"
     },
-    "status": {
+    "statusValues": {
       "created": "已创建",
       "running": "运行中",
       "paused": "已暂停",
       "completed": "已完成",
       "failed": "失败"
     },
-    "mode": {
+    "modeValues": {
       "localhost": "本地模式",
       "cascade": "Cascade模式",
       "cloud": "云端模式"
@@ -63,13 +73,33 @@
     "analyzeProject": "分析项目",
     "dependencyGraph": "依赖关系图",
     "codeFlow": "代码流程图",
-    "moduleOverview": "模块概览"
+    "moduleOverview": "模块概览",
+    "callGraph": "调用图",
+    "metrics": "代码度量"
   },
   "settings": {
     "title": "设置",
     "general": "通用",
     "models": "模型",
     "sandbox": "沙箱",
-    "security": "安全"
+    "security": "安全",
+    "auth": "认证",
+    "protocols": "协议"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "username": "用户名",
+    "password": "密码",
+    "email": "邮箱",
+    "logout": "退出登录"
+  },
+  "analytics": {
+    "title": "分析",
+    "overview": "概览",
+    "llmCalls": "LLM 调用",
+    "toolCalls": "工具调用",
+    "sessions": "会话统计",
+    "sandbox": "沙箱使用"
   }
 }

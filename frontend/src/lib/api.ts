@@ -245,3 +245,66 @@ export function connectTerminalWS(
 
   return ws;
 }
+
+/** Auth API */
+export const authApi = {
+  login: (username: string, password: string) =>
+    apiFetch<{ access_token: string; user_id: string; username: string; role: string }>(
+      "/api/auth/login",
+      { method: "POST", body: JSON.stringify({ username, password }) }
+    ),
+
+  register: (username: string, email: string, password: string) =>
+    apiFetch<{ access_token: string; user_id: string; username: string; role: string }>(
+      "/api/auth/register",
+      { method: "POST", body: JSON.stringify({ username, email, password }) }
+    ),
+
+  me: () =>
+    apiFetch<{ user_id: string; username: string; role: string }>("/api/auth/me"),
+};
+
+/** Events API */
+export const eventsApi = {
+  worklog: (sessionId: string, limit = 100) =>
+    apiFetch<{ session_id: string; total: number; events: Array<Record<string, unknown>> }>(
+      `/api/events/${sessionId}/worklog?limit=${limit}`
+    ),
+
+  summary: (sessionId: string) =>
+    apiFetch<Record<string, unknown>>(
+      `/api/events/${sessionId}/worklog/summary`
+    ),
+};
+
+/** Analytics API */
+export const analyticsApi = {
+  metrics: () =>
+    apiFetch<Record<string, unknown>>("/api/analytics/metrics"),
+
+  overview: () =>
+    apiFetch<Record<string, unknown>>("/api/analytics/overview"),
+
+  traces: (limit = 50) =>
+    apiFetch<{ traces: unknown[]; total: number }>(
+      `/api/analytics/traces?limit=${limit}`
+    ),
+};
+
+/** Knowledge API */
+export const knowledgeApi = {
+  list: () =>
+    apiFetch<Array<Record<string, unknown>>>("/api/knowledge/"),
+
+  create: (data: { name: string; content: string; layer?: string }) =>
+    apiFetch<Record<string, unknown>>("/api/knowledge/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+};
+
+/** Playbooks API */
+export const playbooksApi = {
+  list: () =>
+    apiFetch<Array<Record<string, unknown>>>("/api/playbooks/"),
+};

@@ -16,12 +16,22 @@
     "deepwiki": "DeepWiki",
     "codemaps": "CodeMap",
     "settings": "Settings",
-    "newSession": "New Session"
+    "newSession": "New Session",
+    "knowledge": "Knowledge",
+    "playbooks": "Playbooks",
+    "analytics": "Analytics"
   },
   "session": {
     "title": "Sessions",
     "newSession": "New Session",
-    "noSessions": "No sessions yet. Click New Session to get started.",
+    "noSessions": "No sessions yet. Click to create one.",
+    "info": "Session Info",
+    "status": "Status",
+    "running": "Running",
+    "mode": "Mode",
+    "model": "Model",
+    "platform": "Platform",
+    "tools": "Available Tools",
     "tabs": {
       "chat": "Chat",
       "worklog": "Worklog",
@@ -29,19 +39,19 @@
       "changes": "Changes",
       "desktop": "Desktop"
     },
-    "status": {
+    "statusValues": {
       "created": "Created",
       "running": "Running",
       "paused": "Paused",
       "completed": "Completed",
       "failed": "Failed"
     },
-    "mode": {
+    "modeValues": {
       "localhost": "Localhost",
       "cascade": "Cascade",
       "cloud": "Cloud"
     },
-    "placeholder": "Describe what you need. The Agent will execute in a sandbox...",
+    "placeholder": "Enter your request. Agent will execute in sandbox...",
     "send": "Send"
   },
   "deepwiki": {
@@ -63,13 +73,33 @@
     "analyzeProject": "Analyze Project",
     "dependencyGraph": "Dependency Graph",
     "codeFlow": "Code Flow",
-    "moduleOverview": "Module Overview"
+    "moduleOverview": "Module Overview",
+    "callGraph": "Call Graph",
+    "metrics": "Code Metrics"
   },
   "settings": {
     "title": "Settings",
     "general": "General",
     "models": "Models",
     "sandbox": "Sandbox",
-    "security": "Security"
+    "security": "Security",
+    "auth": "Authentication",
+    "protocols": "Protocols"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "logout": "Logout"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "overview": "Overview",
+    "llmCalls": "LLM Calls",
+    "toolCalls": "Tool Calls",
+    "sessions": "Session Stats",
+    "sandbox": "Sandbox Usage"
   }
 }
