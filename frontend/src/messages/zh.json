@@ -25,7 +25,11 @@
     "repos": "仓库",
     "automations": "自动化",
     "mcp": "MCP 市场",
-    "apikeys": "API 密钥"
+    "apikeys": "API 密钥",
+    "membership": "成员管理",
+    "billing": "计费",
+    "batch": "批量会话",
+    "cicd": "CI/CD"
   },
   "session": {
     "title": "会话",

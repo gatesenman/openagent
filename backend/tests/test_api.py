@@ -473,3 +473,81 @@ def test_worklog_api(client):
 
     resp = client.post("/api/worklog/test-session/replay/stop")
     assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Orgs API
+# ---------------------------------------------------------------------------
+
+def test_orgs_api(client):
+    resp = client.post("/api/orgs/", json={"name": "test-org", "display_name": "Test Org"})
+    assert resp.status_code == 200
+    org_id = resp.json()["id"]
+
+    resp = client.get("/api/orgs/")
+    assert resp.status_code == 200
+
+    resp = client.post(f"/api/orgs/{org_id}/members", json={"user_id": "u1", "email": "a@test.com"})
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/orgs/{org_id}/members")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Billing API
+# ---------------------------------------------------------------------------
+
+def test_billing_api(client):
+    resp = client.get("/api/billing/prices")
+    assert resp.status_code == 200
+    assert len(resp.json()["plans"]) == 4
+
+    resp = client.post("/api/billing/record", json={
+        "org_id": "org1", "session_id": "s1", "duration_minutes": 10
+    })
+    assert resp.status_code == 200
+
+    resp = client.get("/api/billing/usage/org1")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Batch API
+# ---------------------------------------------------------------------------
+
+def test_batch_api(client):
+    resp = client.post("/api/batch/", json={
+        "parent_session_id": "p1",
+        "title": "Test batch",
+        "subtasks": [{"title": "sub1", "prompt": "do thing"}],
+    })
+    assert resp.status_code == 200
+    batch_id = resp.json()["id"]
+
+    resp = client.post(f"/api/batch/{batch_id}/start")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/batch/{batch_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# CICD API
+# ---------------------------------------------------------------------------
+
+def test_cicd_api(client):
+    resp = client.post("/api/cicd/pipelines", json={
+        "session_id": "s1", "template": "python", "branch": "main"
+    })
+    assert resp.status_code == 200
+    pid = resp.json()["id"]
+
+    resp = client.post(f"/api/cicd/pipelines/{pid}/run")
+    assert resp.status_code == 200
+
+    resp = client.get(f"/api/cicd/pipelines/{pid}")
+    assert resp.status_code == 200
+
+    resp = client.get("/api/cicd/templates")
+    assert resp.status_code == 200

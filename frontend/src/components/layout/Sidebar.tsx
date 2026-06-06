@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { key: "sessions", href: "/sessions", icon: "💬" },
+  { key: "batch", href: "/batch", icon: "🔀" },
   { key: "deepwiki", href: "/deepwiki", icon: "📚" },
   { key: "codemaps", href: "/codemaps", icon: "🗺️" },
   { key: "knowledge", href: "/knowledge", icon: "🧠" },
@@ -17,6 +18,8 @@ const navItems = [
   { key: "secrets", href: "/secrets", icon: "🔑" },
   { key: "blueprints", href: "/blueprints", icon: "🏗️" },
   { key: "apikeys", href: "/api-keys", icon: "🔐" },
+  { key: "membership", href: "/membership", icon: "👥" },
+  { key: "billing", href: "/billing", icon: "💰" },
   { key: "analytics", href: "/analytics", icon: "📊" },
   { key: "settings", href: "/settings", icon: "⚙️" },
 ];

@@ -12,9 +12,10 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (agents, analytics, apikeys, audit, auth, automations,
-    blueprints, codemaps, deepwiki, devbox, events, git, knowledge,
-    mcp_market, memory, notifications, playbooks, pr_review,
-    repos, secrets, sessions, skills, tools, worklog)
+    batch, billing, blueprints, cicd, codemaps, deepwiki, devbox,
+    events, git, knowledge, mcp_market, memory, notifications,
+    orgs, playbooks, pr_review, repos, secrets, sessions, skills,
+    tools, worklog)
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
@@ -84,6 +85,10 @@ app.include_router(memory.router, prefix="/api/memory", tags=["memory"])
 app.include_router(pr_review.router, prefix="/api/pr-review", tags=["pr-review"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 app.include_router(worklog.router, prefix="/api/worklog", tags=["worklog"])
+app.include_router(orgs.router, prefix="/api/orgs", tags=["orgs"])
+app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
+app.include_router(batch.router, prefix="/api/batch", tags=["batch"])
+app.include_router(cicd.router, prefix="/api/cicd", tags=["cicd"])
 
 
 @app.get("/")

@@ -520,3 +520,122 @@ def test_worklog_service():
     assert event["index"] == 1
 
     svc.stop_replay("s1")
+
+
+def test_org_service():
+    from app.services.org_service import OrgService
+
+    svc = OrgService()
+
+    # 创建组织
+    org = svc.create_org("test-org", "测试组织", "pro")
+    assert org.name == "test-org"
+
+    # 添加成员
+    m1 = svc.add_member(org.id, "u1", email="a@test.com", role="admin")
+    m2 = svc.add_member(org.id, "u2", email="b@test.com", role="member")
+    assert m1 is not None and m2 is not None
+
+    # 列出成员
+    members = svc.list_members(org.id)
+    assert len(members) == 2
+
+    # 创建团队
+    team = svc.create_team(org.id, "前端团队")
+    assert team is not None
+    svc.add_member_to_team(org.id, team.id, m2.id)
+
+    # 修改角色
+    svc.update_member_role(org.id, m2.id, "viewer")
+    members = svc.list_members(org.id)
+    assert any(m["role"] == "viewer" for m in members)
+
+    # 删除成员
+    svc.remove_member(org.id, m2.id)
+    assert len(svc.list_members(org.id)) == 1
+
+
+def test_billing_service():
+    from app.services.billing_service import BillingService
+
+    svc = BillingService()
+
+    # 记录使用
+    r1 = svc.record_usage("org1", "s1", duration_minutes=10, token_input=50000, token_output=20000)
+    assert r1.acu_consumed > 0
+
+    r2 = svc.record_usage("org1", "s2", duration_minutes=30, token_input=100000, token_output=50000)
+
+    # 用量摘要
+    summary = svc.get_usage_summary("org1")
+    assert summary["total_sessions"] == 2
+    assert summary["monthly_acu_used"] > 0
+
+    # 会话大小分类
+    assert svc.classify_session_size(3).value == "xs"
+    assert svc.classify_session_size(10).value == "s"
+    assert svc.classify_session_size(30).value == "m"
+    assert svc.classify_session_size(120).value == "l"
+    assert svc.classify_session_size(300).value == "xl"
+
+    # 配额检查
+    quota = svc.check_quota("org1")
+    assert quota["within_quota"] is True
+
+    # 价格表
+    prices = svc.get_price_table()
+    assert len(prices) == 4
+
+
+def test_batch_session_service():
+    from app.services.batch_session_service import BatchSessionService
+
+    svc = BatchSessionService()
+
+    # 创建批量
+    batch = svc.create_batch(
+        "parent-1", "重构任务",
+        [
+            {"title": "重构模块A", "prompt": "重构A模块"},
+            {"title": "重构模块B", "prompt": "重构B模块"},
+        ],
+    )
+    assert len(batch.subtasks) == 2
+
+    # 启动
+    svc.start_batch(batch.id)
+    detail = svc.get_batch(batch.id)
+    assert detail is not None
+    assert detail["status"] == "running"
+
+    # 更新子任务
+    svc.update_subtask(batch.id, batch.subtasks[0].id, "completed", "done")
+    svc.update_subtask(batch.id, batch.subtasks[1].id, "completed", "done")
+
+    detail = svc.get_batch(batch.id)
+    assert detail["status"] == "completed"
+
+
+def test_cicd_service():
+    from app.services.cicd_service import CICDService
+
+    svc = CICDService()
+
+    # 创建流水线
+    p = svc.create_pipeline("s1", template="python", branch="main")
+    assert len(p.steps) == 4
+
+    # 运行
+    result = svc.run_pipeline(p.id)
+    assert result is not None
+    assert result.status.value == "success"
+
+    # 查询
+    detail = svc.get_pipeline(p.id)
+    assert detail is not None
+    assert all(s["status"] == "success" for s in detail["steps"])
+
+    # 模板
+    templates = svc.get_templates()
+    assert "python" in templates
+    assert "node" in templates

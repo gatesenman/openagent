@@ -25,7 +25,11 @@
     "repos": "Repos",
     "automations": "Automations",
     "mcp": "MCP Market",
-    "apikeys": "API Keys"
+    "apikeys": "API Keys",
+    "membership": "Membership",
+    "billing": "Billing",
+    "batch": "Batch Sessions",
+    "cicd": "CI/CD"
   },
   "session": {
     "title": "Sessions",
