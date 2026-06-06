@@ -107,12 +107,44 @@ class DependencyGraph:
                 for e in self.edges
             ],
             "cycles": self.find_circular(),
+            "mermaid": self.to_mermaid(),
+            "dot": self.to_dot(),
             "stats": {
                 "total_nodes": len(self.nodes),
                 "total_edges": len(self.edges),
                 "has_cycles": len(self.find_circular()) > 0,
             },
         }
+
+    def to_mermaid(self) -> str:
+        """导出为 Mermaid 图表语法（前端可直接渲染）."""
+        lines = ["graph TD"]
+        # 节点
+        for node in self.nodes:
+            safe_id = node["id"].replace("/", "_").replace(".", "_").replace("-", "_")
+            label = node["name"]
+            lines.append(f"    {safe_id}[{label}]")
+        # 边
+        for edge in self.edges:
+            src = edge.source.replace("/", "_").replace(".", "_").replace("-", "_")
+            tgt = edge.target.replace("/", "_").replace(".", "_").replace("-", "_")
+            lines.append(f"    {src} --> {tgt}")
+        return "\n".join(lines)
+
+    def to_dot(self) -> str:
+        """导出为 DOT 格式（Graphviz 可渲染）."""
+        lines = ["digraph dependencies {"]
+        lines.append("    rankdir=LR;")
+        lines.append('    node [shape=box, style=filled, fillcolor="#e8e8e8"];')
+        for node in self.nodes:
+            safe_id = node["id"].replace("/", "_").replace(".", "_").replace("-", "_")
+            lines.append(f'    {safe_id} [label="{node["name"]}"];')
+        for edge in self.edges:
+            src = edge.source.replace("/", "_").replace(".", "_").replace("-", "_")
+            tgt = edge.target.replace("/", "_").replace(".", "_").replace("-", "_")
+            lines.append(f"    {src} -> {tgt};")
+        lines.append("}")
+        return "\n".join(lines)
 
     def _resolve_import(
         self,

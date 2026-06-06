@@ -127,6 +127,35 @@ async def send_message(
     )
 
 
+@router.post("/{session_id}/chat")
+async def chat(
+    session_id: str,
+    data: MessageCreate,
+    db: DBSession = Depends(get_db),
+):
+    """发送消息并返回 SSE 事件流（兼容前端 subscribeChatSSE）.
+
+    与 /message 功能相同，额外路由方便前端调用。
+    """
+    session = session_service.get_session(db, session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="会话不存在")
+
+    async def event_stream():
+        async for event in session_service.send_message(db, session_id, data.content):
+            yield event.to_sse()
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @router.get("/{session_id}/events")
 async def get_events(
     session_id: str,
