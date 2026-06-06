@@ -200,3 +200,54 @@ async def get_messages(
         ],
         "total": len(messages),
     }
+
+
+# --- 会话生命周期 ---
+
+@router.post("/{session_id}/pause")
+async def pause_session(
+    session_id: str,
+    db: DBSession = Depends(get_db),
+):
+    """暂停会话 — 保存状态快照."""
+    session = await session_service.pause_session(db, session_id)
+    if not session:
+        raise HTTPException(status_code=400, detail="会话无法暂停（需为 running/idle 状态）")
+    return {"status": session.status, "session_id": session_id}
+
+
+@router.post("/{session_id}/resume")
+async def resume_session(
+    session_id: str,
+    db: DBSession = Depends(get_db),
+):
+    """恢复会话 — 从快照恢复沙箱."""
+    session = await session_service.resume_session(db, session_id)
+    if not session:
+        raise HTTPException(status_code=400, detail="会话无法恢复（需为 paused 状态）")
+    return {"status": session.status, "session_id": session_id}
+
+
+@router.post("/{session_id}/handoff")
+async def handoff_session(
+    session_id: str,
+    target_mode: str = "cloud",
+    db: DBSession = Depends(get_db),
+):
+    """交接会话 — localhost <-> cloud 模式切换."""
+    session = await session_service.handoff_session(db, session_id, target_mode)
+    if not session:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    return {"status": session.status, "mode": session.mode, "session_id": session_id}
+
+
+@router.post("/{session_id}/fork")
+async def fork_session(
+    session_id: str,
+    db: DBSession = Depends(get_db),
+):
+    """分叉会话 — 从当前状态创建新会话副本."""
+    forked = await session_service.fork_session(db, session_id)
+    if not forked:
+        raise HTTPException(status_code=404, detail="源会话不存在")
+    return SessionResponse.model_validate(forked)

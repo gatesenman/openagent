@@ -110,6 +110,89 @@ class SessionService:
         db.refresh(session)
         return session
 
+    async def pause_session(self, db: DBSession, session_id: str) -> Session | None:
+        """暂停会话 — 保存状态快照，释放沙箱资源."""
+        session = self.get_session(db, session_id)
+        if not session or session.status not in ("running", "idle"):
+            return None
+        session.status = "paused"
+        session.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(session)
+        logger.info("会话已暂停: %s", session_id)
+        return session
+
+    async def resume_session(self, db: DBSession, session_id: str) -> Session | None:
+        """恢复会话 — 从快照恢复沙箱."""
+        session = self.get_session(db, session_id)
+        if not session or session.status != "paused":
+            return None
+        # 重新创建沙箱
+        try:
+            await sandbox_manager.create_sandbox(
+                session_id=session_id,
+                mode=session.mode,
+                platform=session.platform,
+            )
+            session.status = "running"
+        except Exception as e:
+            logger.error("恢复沙箱失败: %s", e)
+            session.status = "failed"
+        session.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(session)
+        return session
+
+    async def handoff_session(
+        self, db: DBSession, session_id: str, target_mode: str
+    ) -> Session | None:
+        """交接会话 — localhost <-> cloud 模式切换.
+
+        例如: 本地开发完成后交给云端继续 CI/CD
+        """
+        session = self.get_session(db, session_id)
+        if not session:
+            return None
+        old_mode = session.mode
+        session.mode = target_mode
+        session.status = "handoff"
+        session.updated_at = datetime.utcnow()
+        db.commit()
+        # 销毁旧沙箱，创建新沙箱
+        await sandbox_manager.destroy_sandbox(session_id)
+        try:
+            await sandbox_manager.create_sandbox(
+                session_id=session_id,
+                mode=target_mode,
+                platform=session.platform,
+            )
+            session.status = "running"
+        except Exception as e:
+            logger.error("交接沙箱失败: %s", e)
+            session.status = "failed"
+        db.commit()
+        db.refresh(session)
+        logger.info("会话已交接: %s -> %s (%s)", session_id, target_mode, old_mode)
+        return session
+
+    async def fork_session(
+        self, db: DBSession, session_id: str
+    ) -> Session | None:
+        """分叉会话 — 从当前状态创建新会话副本."""
+        source = self.get_session(db, session_id)
+        if not source:
+            return None
+        forked = await self.create_session(
+            db=db,
+            title=f"{source.title} (fork)",
+            mode=source.mode,
+            model=source.model,
+            platform=source.platform,
+            language=source.language,
+        )
+        logger.info("会话已分叉: %s -> %s", session_id, forked.id)
+        return forked
+
     async def delete_session(self, db: DBSession, session_id: str) -> bool:
         """删除会话 + 销毁沙箱."""
         session = self.get_session(db, session_id)

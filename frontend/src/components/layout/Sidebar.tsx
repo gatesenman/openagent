@@ -9,6 +9,9 @@ const navItems = [
   { key: "sessions", href: "/sessions", icon: "💬" },
   { key: "deepwiki", href: "/deepwiki", icon: "📚" },
   { key: "codemaps", href: "/codemaps", icon: "🗺️" },
+  { key: "knowledge", href: "/knowledge", icon: "🧠" },
+  { key: "playbooks", href: "/playbooks", icon: "📋" },
+  { key: "analytics", href: "/analytics", icon: "📊" },
   { key: "settings", href: "/settings", icon: "⚙️" },
 ];
 

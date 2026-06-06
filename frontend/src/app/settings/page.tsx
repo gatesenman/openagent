@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-type SettingsTab = "general" | "models" | "sandbox" | "security";
+type SettingsTab = "general" | "models" | "sandbox" | "security" | "auth" | "protocols";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
@@ -16,7 +16,7 @@ export default function SettingsPage() {
       <div className="w-56 border-r border-[var(--border)] p-4">
         <h2 className="text-lg font-semibold mb-4">{t("title")}</h2>
         <nav className="space-y-1">
-          {(["general", "models", "sandbox", "security"] as const).map(
+          {(["general", "models", "sandbox", "security", "auth", "protocols"] as const).map(
             (tab) => (
               <button
                 key={tab}
@@ -42,6 +42,8 @@ export default function SettingsPage() {
           {activeTab === "models" && <ModelSettings />}
           {activeTab === "sandbox" && <SandboxSettings />}
           {activeTab === "security" && <SecuritySettings />}
+          {activeTab === "auth" && <AuthSettings />}
+          {activeTab === "protocols" && <ProtocolSettings />}
         </div>
       </div>
     </div>
@@ -176,6 +178,81 @@ function SandboxSettings() {
           className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-48"
         />
       </SettingItem>
+    </div>
+  );
+}
+
+function AuthSettings() {
+  return (
+    <div>
+      <h3 className="text-lg font-semibold mb-4">认证设置</h3>
+      <SettingItem label="认证方式" description="用户认证机制">
+        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
+          <option value="jwt">JWT Token</option>
+          <option value="oauth">OAuth 2.0</option>
+          <option value="oidc">OpenID Connect</option>
+        </select>
+      </SettingItem>
+      <SettingItem label="Token 过期时间" description="JWT Token 有效期（分钟）">
+        <input
+          type="number"
+          min="5"
+          max="1440"
+          defaultValue="480"
+          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20"
+        />
+      </SettingItem>
+      <SettingItem label="SSO 集成" description="企业单点登录">
+        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
+          <option value="none">未配置</option>
+          <option value="saml">SAML 2.0</option>
+          <option value="oidc">OIDC</option>
+        </select>
+      </SettingItem>
+      <SettingItem label="双因素认证" description="启用 TOTP 二次验证">
+        <input type="checkbox" className="w-4 h-4 accent-[var(--accent)]" />
+      </SettingItem>
+    </div>
+  );
+}
+
+function ProtocolSettings() {
+  const protocols = [
+    { name: "JSON-RPC 2.0", status: "active", version: "2.0", desc: "基础通信层" },
+    { name: "MCP", status: "active", version: "1.0", desc: "工具连接协议" },
+    { name: "A2A", status: "active", version: "0.2", desc: "Agent间协作" },
+    { name: "AG-UI", status: "active", version: "0.1", desc: "Agent事件流" },
+    { name: "ACP", status: "planned", version: "-", desc: "编辑器协作" },
+    { name: "ANP", status: "planned", version: "-", desc: "Agent网络" },
+    { name: "OAuth 2.0", status: "active", version: "2.0", desc: "认证授权" },
+    { name: "OpenTelemetry", status: "partial", version: "1.0", desc: "可观测性" },
+  ];
+
+  return (
+    <div>
+      <h3 className="text-lg font-semibold mb-4">协议状态</h3>
+      <div className="space-y-2">
+        {protocols.map((p) => (
+          <div key={p.name} className="flex items-center justify-between py-3 border-b border-[var(--border)]">
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${
+                p.status === "active" ? "bg-green-500" :
+                p.status === "partial" ? "bg-yellow-500" : "bg-zinc-500"
+              }`} />
+              <div>
+                <p className="text-sm font-medium">{p.name} <span className="text-xs text-[var(--text-secondary)]">{p.version}</span></p>
+                <p className="text-xs text-[var(--text-secondary)]">{p.desc}</p>
+              </div>
+            </div>
+            <span className={`text-xs px-2 py-0.5 rounded ${
+              p.status === "active" ? "bg-green-500/20 text-green-400" :
+              p.status === "partial" ? "bg-yellow-500/20 text-yellow-400" : "bg-zinc-500/20 text-zinc-400"
+            }`}>
+              {p.status === "active" ? "已启用" : p.status === "partial" ? "部分实现" : "计划中"}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

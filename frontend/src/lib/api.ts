@@ -308,3 +308,101 @@ export const playbooksApi = {
   list: () =>
     apiFetch<Array<Record<string, unknown>>>("/api/playbooks/"),
 };
+
+/** Git API */
+export const gitApi = {
+  status: (sessionId: string) =>
+    apiFetch<Record<string, unknown>>(`/api/git/status/${sessionId}`),
+
+  diff: (sessionId: string, staged = false) =>
+    apiFetch<Array<Record<string, unknown>>>(
+      `/api/git/diff/${sessionId}?staged=${staged}`
+    ),
+
+  log: (sessionId: string, limit = 20) =>
+    apiFetch<Array<Record<string, unknown>>>(
+      `/api/git/log/${sessionId}?limit=${limit}`
+    ),
+
+  clone: (sessionId: string, repoUrl: string) =>
+    apiFetch<Record<string, unknown>>("/api/git/clone", {
+      method: "POST",
+      body: JSON.stringify({ session_id: sessionId, repo_url: repoUrl }),
+    }),
+
+  commit: (sessionId: string, message: string) =>
+    apiFetch<Record<string, unknown>>("/api/git/commit", {
+      method: "POST",
+      body: JSON.stringify({ session_id: sessionId, message }),
+    }),
+
+  push: (sessionId: string) =>
+    apiFetch<Record<string, unknown>>("/api/git/push", {
+      method: "POST",
+      body: JSON.stringify({ session_id: sessionId }),
+    }),
+};
+
+/** Automation API */
+export const automationApi = {
+  listRules: () =>
+    apiFetch<Array<Record<string, unknown>>>("/api/automations/rules"),
+
+  createRule: (data: Record<string, unknown>) =>
+    apiFetch<Record<string, unknown>>("/api/automations/rules", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  listSchedules: () =>
+    apiFetch<Array<Record<string, unknown>>>("/api/automations/schedules"),
+
+  webhookHistory: (limit = 50) =>
+    apiFetch<Array<Record<string, unknown>>>(
+      `/api/automations/webhook/history?limit=${limit}`
+    ),
+};
+
+/** MCP Marketplace API */
+export const mcpApi = {
+  listServers: (category?: string) =>
+    apiFetch<Array<Record<string, unknown>>>(
+      `/api/mcp/marketplace/servers${category ? `?category=${category}` : ""}`
+    ),
+
+  getServer: (id: string) =>
+    apiFetch<Record<string, unknown>>(`/api/mcp/marketplace/servers/${id}`),
+
+  installServer: (id: string) =>
+    apiFetch<Record<string, unknown>>(
+      `/api/mcp/marketplace/servers/${id}/install`,
+      { method: "POST" }
+    ),
+
+  listTools: () =>
+    apiFetch<Array<Record<string, unknown>>>("/api/mcp/marketplace/tools"),
+};
+
+/** Session lifecycle API */
+export const sessionLifecycleApi = {
+  pause: (id: string) =>
+    apiFetch<Record<string, unknown>>(`/api/sessions/${id}/pause`, {
+      method: "POST",
+    }),
+
+  resume: (id: string) =>
+    apiFetch<Record<string, unknown>>(`/api/sessions/${id}/resume`, {
+      method: "POST",
+    }),
+
+  handoff: (id: string, targetMode: string) =>
+    apiFetch<Record<string, unknown>>(
+      `/api/sessions/${id}/handoff?target_mode=${targetMode}`,
+      { method: "POST" }
+    ),
+
+  fork: (id: string) =>
+    apiFetch<Session>(`/api/sessions/${id}/fork`, {
+      method: "POST",
+    }),
+};

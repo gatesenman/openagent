@@ -146,3 +146,102 @@ def test_events_worklog(client):
     resp = client.get("/api/events/test-session/worklog")
     assert resp.status_code == 200
     assert resp.json()["session_id"] == "test-session"
+
+
+# --- 新增模块测试 ---
+
+def test_automations_rules(client):
+    """自动化规则列表."""
+    resp = client.get("/api/automations/rules")
+    assert resp.status_code == 200
+    rules = resp.json()
+    assert isinstance(rules, list)
+    assert len(rules) >= 2  # 2个默认规则
+
+
+def test_automations_create_rule(client):
+    """创建自动化规则."""
+    resp = client.post("/api/automations/rules", json={
+        "name": "测试规则",
+        "description": "自动化测试",
+        "trigger_type": "webhook",
+    })
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "测试规则"
+
+
+def test_automations_schedules(client):
+    """定时任务列表."""
+    resp = client.get("/api/automations/schedules")
+    assert resp.status_code == 200
+    assert isinstance(resp.json(), list)
+
+
+def test_automations_webhook(client):
+    """Webhook 接收."""
+    resp = client.post("/api/automations/webhook", json={
+        "event_type": "push",
+        "payload": {"ref": "refs/heads/main"},
+    })
+    assert resp.status_code == 200
+    assert resp.json()["event_type"] == "push"
+
+
+def test_mcp_marketplace_servers(client):
+    """MCP 工具市场 - 服务器列表."""
+    resp = client.get("/api/mcp/marketplace/servers")
+    assert resp.status_code == 200
+    servers = resp.json()
+    assert isinstance(servers, list)
+    assert len(servers) >= 4  # 至少4个内置
+
+
+def test_mcp_marketplace_install(client):
+    """MCP 工具市场 - 安装服务器."""
+    resp = client.post("/api/mcp/marketplace/servers/github/install")
+    assert resp.status_code == 200
+    assert resp.json()["installed"] is True
+
+
+def test_mcp_marketplace_tools(client):
+    """MCP 工具市场 - 工具列表."""
+    resp = client.get("/api/mcp/marketplace/tools")
+    assert resp.status_code == 200
+    tools = resp.json()
+    assert isinstance(tools, list)
+    assert len(tools) >= 5  # 内置工具
+
+
+def test_session_lifecycle_pause_resume(client):
+    """会话生命周期 - 暂停/恢复."""
+    # 先创建会话
+    create_resp = client.post("/api/sessions/", json={
+        "title": "lifecycle-test",
+        "mode": "localhost",
+    })
+    assert create_resp.status_code == 200
+    session_id = create_resp.json()["id"]
+
+    # 暂停
+    pause_resp = client.post(f"/api/sessions/{session_id}/pause")
+    assert pause_resp.status_code == 200
+    assert pause_resp.json()["status"] == "paused"
+
+    # 恢复
+    resume_resp = client.post(f"/api/sessions/{session_id}/resume")
+    assert resume_resp.status_code == 200
+    assert resume_resp.json()["status"] == "running"
+
+
+def test_session_lifecycle_fork(client):
+    """会话生命周期 - 分叉."""
+    create_resp = client.post("/api/sessions/", json={
+        "title": "fork-source",
+        "mode": "localhost",
+    })
+    assert create_resp.status_code == 200
+    session_id = create_resp.json()["id"]
+
+    fork_resp = client.post(f"/api/sessions/{session_id}/fork")
+    assert fork_resp.status_code == 200
+    assert "fork" in fork_resp.json()["title"]
