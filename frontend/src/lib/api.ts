@@ -144,4 +144,104 @@ export const codemapApi = {
       "/api/codemaps/overview",
       { method: "POST", body: JSON.stringify({ repo_path: repoPath }) }
     ),
+
+  callgraph: (repoPath: string) =>
+    apiFetch<{ functions: unknown[]; edges: unknown[]; stats: Record<string, unknown> }>(
+      "/api/codemaps/callgraph",
+      { method: "POST", body: JSON.stringify({ repo_path: repoPath }) }
+    ),
+
+  metrics: (repoPath: string) =>
+    apiFetch<{ summary: Record<string, unknown>; files: unknown[]; by_language: Record<string, unknown> }>(
+      "/api/codemaps/metrics",
+      { method: "POST", body: JSON.stringify({ repo_path: repoPath }) }
+    ),
 };
+
+/** Protocols API */
+export const protocolsApi = {
+  status: () =>
+    apiFetch<{ protocols: Array<{ name: string; status: string }> }>(
+      "/api/protocols"
+    ),
+
+  mcpInfo: () =>
+    apiFetch<{ name: string; version: string; protocol_version: string }>(
+      "/mcp/info"
+    ),
+};
+
+/** SSE 事件流 */
+export function subscribeChatSSE(
+  sessionId: string,
+  message: string,
+  onEvent: (event: AgentEvent) => void,
+  onError?: (err: Error) => void,
+): AbortController {
+  const controller = new AbortController();
+
+  fetch(`${API_BASE}/api/sessions/${sessionId}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message }),
+    signal: controller.signal,
+  })
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`SSE Error: ${res.status}`);
+      const reader = res.body?.getReader();
+      if (!reader) return;
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              onEvent(data);
+            } catch {
+              // skip invalid JSON
+            }
+          }
+        }
+      }
+    })
+    .catch((err) => {
+      if (err.name !== "AbortError") {
+        onError?.(err);
+      }
+    });
+
+  return controller;
+}
+
+/** WebSocket 连接 */
+export function connectTerminalWS(
+  sessionId: string,
+  onMessage: (data: Record<string, unknown>) => void,
+  onError?: (err: Event) => void,
+): WebSocket {
+  const wsBase = API_BASE.replace(/^http/, "ws");
+  const ws = new WebSocket(`${wsBase}/ws/terminal/${sessionId}`);
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      onMessage(data);
+    } catch {
+      // skip
+    }
+  };
+
+  ws.onerror = (err) => onError?.(err);
+
+  return ws;
+}

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { ChangesPanel } from "./ChangesPanel";
 import { ChatPanel } from "./ChatPanel";
+import { DesktopPanel } from "./DesktopPanel";
 import { WorklogPanel } from "./WorklogPanel";
 import { TerminalPanel } from "./TerminalPanel";
 import type { Message } from "@/lib/api";
@@ -80,16 +82,8 @@ export function SessionDetail({ sessionId }: SessionDetailProps) {
         {activeTab === "terminal" && (
           <TerminalPanel sessionId={sessionId} />
         )}
-        {activeTab === "changes" && (
-          <div className="flex items-center justify-center h-full text-[var(--text-secondary)]">
-            暂无代码变更
-          </div>
-        )}
-        {activeTab === "desktop" && (
-          <div className="flex items-center justify-center h-full text-[var(--text-secondary)]">
-            桌面流（VNC）将在 Phase 2 实现
-          </div>
-        )}
+        {activeTab === "changes" && <ChangesPanel />}
+        {activeTab === "desktop" && <DesktopPanel />}
       </div>
     </div>
   );
