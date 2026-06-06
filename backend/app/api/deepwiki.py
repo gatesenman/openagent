@@ -12,6 +12,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.services.deepwiki.cross_reference import CrossReferenceAnalyzer
 from app.services.deepwiki.doc_generator import DocGenerator
 from app.services.deepwiki.embedding_service import embedding_service
 from app.services.deepwiki.indexer import repo_indexer
@@ -103,3 +104,33 @@ async def file_tree(repo_path: str):
     """获取仓库文件树."""
     tree = repo_indexer.get_file_tree(repo_path)
     return tree
+
+
+@router.post("/cross-references")
+async def cross_references(req: IndexRequest):
+    """分析符号交叉引用关系."""
+    analyzer = CrossReferenceAnalyzer()
+    result = analyzer.analyze(req.repo_path)
+    return result
+
+
+@router.get("/languages")
+async def supported_languages():
+    """查询支持的编程语言列表."""
+    return {
+        "languages": [
+            {"name": "Python", "extensions": [".py"], "parser": "tree-sitter + regex"},
+            {"name": "JavaScript", "extensions": [".js", ".jsx"], "parser": "tree-sitter + regex"},
+            {"name": "TypeScript", "extensions": [".ts", ".tsx"], "parser": "tree-sitter + regex"},
+            {"name": "Java", "extensions": [".java"], "parser": "regex"},
+            {"name": "Go", "extensions": [".go"], "parser": "regex"},
+            {"name": "Rust", "extensions": [".rs"], "parser": "regex"},
+            {"name": "C", "extensions": [".c", ".h"], "parser": "regex"},
+            {"name": "C++", "extensions": [".cpp", ".cc", ".cxx", ".hpp"], "parser": "regex"},
+            {"name": "Ruby", "extensions": [".rb"], "parser": "regex"},
+            {"name": "PHP", "extensions": [".php"], "parser": "regex"},
+            {"name": "Swift", "extensions": [".swift"], "parser": "regex"},
+            {"name": "Kotlin", "extensions": [".kt"], "parser": "regex"},
+        ],
+        "total": 12,
+    }

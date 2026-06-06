@@ -14,6 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import agents, codemaps, deepwiki, sessions, tools
 from app.core.config import settings
 from app.core.database import Base, engine
+from app.protocols.agui import AGUIEventBuilder, AGUIEventType
+from app.protocols.jsonrpc import JsonRpcRequest, JsonRpcResponse
+from app.protocols.mcp import mcp_server
 from app.sandbox.manager import sandbox_manager
 
 logging.basicConfig(
@@ -157,3 +160,68 @@ async def events_websocket(websocket: WebSocket, session_id: str):
         logger.info("事件 WebSocket 断开: session=%s", session_id)
     except Exception as e:
         logger.error("事件 WebSocket 异常: %s", e)
+
+
+# ==================== MCP 协议端点 ====================
+
+
+@app.post("/mcp/rpc")
+async def mcp_rpc_handler(request: dict):
+    """MCP JSON-RPC 端点.
+
+    外部 Agent/IDE 通过此端点调用 OpenAgent 的 MCP Server 能力。
+    """
+    try:
+        rpc_req = JsonRpcRequest.from_dict(request)
+        rpc_resp = await mcp_server.handle_request(rpc_req)
+        return rpc_resp.to_dict()
+    except Exception as e:
+        return JsonRpcResponse.failure(
+            request.get("id"), -32603, f"MCP 处理异常: {e}"
+        ).to_dict()
+
+
+@app.get("/mcp/info")
+async def mcp_info():
+    """MCP Server 信息."""
+    return {
+        "name": mcp_server.name,
+        "version": mcp_server.version,
+        "protocol_version": "2025-03-26",
+        "capabilities": {
+            "tools": True,
+            "resources": True,
+            "prompts": True,
+        },
+    }
+
+
+@app.get("/api/protocols")
+async def protocols_status():
+    """协议层状态概览."""
+    return {
+        "protocols": [
+            {
+                "name": "JSON-RPC 2.0",
+                "status": "active",
+                "endpoint": "/mcp/rpc",
+            },
+            {
+                "name": "MCP",
+                "status": "active",
+                "version": "2025-03-26",
+                "endpoint": "/mcp/rpc",
+            },
+            {
+                "name": "AG-UI",
+                "status": "active",
+                "events": len(AGUIEventType),
+                "transport": "SSE + WebSocket",
+            },
+            {
+                "name": "A2A",
+                "status": "planned",
+                "version": "Phase 2",
+            },
+        ],
+    }

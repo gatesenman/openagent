@@ -12,8 +12,10 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.services.codemap.analyzer import CodeAnalyzer
+from app.services.codemap.call_graph import CallGraph
 from app.services.codemap.dependency_graph import DependencyGraph
 from app.services.codemap.flow_generator import FlowGenerator
+from app.services.codemap.metrics import MetricsAnalyzer
 
 router = APIRouter()
 
@@ -99,3 +101,19 @@ async def module_overview(req: AnalyzeRequest):
     generator = FlowGenerator()
     overview = await generator.generate_module_overview(req.repo_path)
     return overview
+
+
+@router.post("/callgraph")
+async def call_graph(req: AnalyzeRequest):
+    """生成函数调用图."""
+    cg = CallGraph()
+    result = cg.build(req.repo_path)
+    return result
+
+
+@router.post("/metrics")
+async def code_metrics(req: AnalyzeRequest):
+    """代码度量指标（复杂度/行数/注释率/函数长度）."""
+    analyzer = MetricsAnalyzer()
+    result = analyzer.analyze(req.repo_path)
+    return result
