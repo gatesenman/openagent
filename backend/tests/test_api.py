@@ -245,3 +245,137 @@ def test_session_lifecycle_fork(client):
     fork_resp = client.post(f"/api/sessions/{session_id}/fork")
     assert fork_resp.status_code == 200
     assert "fork" in fork_resp.json()["title"]
+
+
+# ---------------------------------------------------------------------------
+# Devbox API
+# ---------------------------------------------------------------------------
+
+def test_devbox_status_not_found(client):
+    resp = client.get("/api/devbox/nonexistent/status")
+    assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# Secrets API
+# ---------------------------------------------------------------------------
+
+def test_secrets_crud(client):
+    # 创建
+    resp = client.post("/api/secrets/", json={"name": "MY_KEY", "value": "v1"})
+    assert resp.status_code == 200
+    secret_id = resp.json()["id"]
+    assert resp.json()["name"] == "MY_KEY"
+
+    # 列出
+    resp = client.get("/api/secrets/")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 1
+
+    # 更新
+    resp = client.put(f"/api/secrets/{secret_id}", json={"value": "v2"})
+    assert resp.status_code == 200
+
+    # 删除
+    resp = client.delete(f"/api/secrets/{secret_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Blueprints API
+# ---------------------------------------------------------------------------
+
+def test_blueprints_list(client):
+    resp = client.get("/api/blueprints/")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 3  # 默认3个模板
+
+
+def test_blueprints_crud(client):
+    resp = client.post("/api/blueprints/", json={
+        "name": "Test BP",
+        "initialize": "echo hello",
+    })
+    assert resp.status_code == 200
+    bp_id = resp.json()["id"]
+
+    resp = client.get(f"/api/blueprints/{bp_id}")
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "Test BP"
+
+    resp = client.get(f"/api/blueprints/{bp_id}/yaml")
+    assert resp.status_code == 200
+    assert "echo hello" in resp.json()["yaml"]
+
+
+# ---------------------------------------------------------------------------
+# Skills API
+# ---------------------------------------------------------------------------
+
+def test_skills_crud(client):
+    resp = client.post("/api/skills/repo1", json={
+        "name": "my-skill",
+        "description": "A skill",
+    })
+    assert resp.status_code == 200
+
+    resp = client.get("/api/skills/repo1")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# API Keys API
+# ---------------------------------------------------------------------------
+
+def test_apikeys_crud(client):
+    resp = client.post("/api/api-keys/", json={
+        "name": "Test Bot",
+        "permissions": ["read"],
+    })
+    assert resp.status_code == 200
+    user_id = resp.json()["id"]
+    assert "api_key" in resp.json()
+
+    resp = client.get("/api/api-keys/")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 1
+
+    resp = client.delete(f"/api/api-keys/{user_id}")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Audit API
+# ---------------------------------------------------------------------------
+
+def test_audit_query(client):
+    resp = client.get("/api/audit/")
+    assert resp.status_code == 200
+
+    resp = client.get("/api/audit/export")
+    assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Repos API
+# ---------------------------------------------------------------------------
+
+def test_repos_crud(client):
+    resp = client.post("/api/repos/", json={
+        "name": "test/repo",
+        "url": "https://github.com/test/repo",
+        "language": "Python",
+    })
+    assert resp.status_code == 200
+    repo_id = resp.json()["id"]
+
+    resp = client.get("/api/repos/")
+    assert resp.status_code == 200
+    assert resp.json()["total"] >= 1
+
+    resp = client.get("/api/repos/search?q=test")
+    assert resp.status_code == 200
+
+    resp = client.delete(f"/api/repos/{repo_id}")
+    assert resp.status_code == 200

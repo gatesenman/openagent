@@ -11,7 +11,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, analytics, auth, automations, codemaps, deepwiki, events, git, knowledge, mcp_market, playbooks, sessions, tools
+from app.api import (agents, analytics, apikeys, audit, auth, automations,
+    blueprints, codemaps, deepwiki, devbox, events, git, knowledge,
+    mcp_market, playbooks, repos, secrets, sessions, skills, tools)
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.protocols.agui import AGUIEventBuilder, AGUIEventType
@@ -70,6 +72,13 @@ app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"]
 app.include_router(automations.router, prefix="/api/automations", tags=["automations"])
 app.include_router(git.router, prefix="/api/git", tags=["git"])
 app.include_router(mcp_market.router, prefix="/api/mcp/marketplace", tags=["mcp-marketplace"])
+app.include_router(devbox.router, prefix="/api/devbox", tags=["devbox"])
+app.include_router(secrets.router, prefix="/api/secrets", tags=["secrets"])
+app.include_router(blueprints.router, prefix="/api/blueprints", tags=["blueprints"])
+app.include_router(skills.router, prefix="/api/skills", tags=["skills"])
+app.include_router(apikeys.router, prefix="/api/api-keys", tags=["api-keys"])
+app.include_router(audit.router, prefix="/api/audit", tags=["audit"])
+app.include_router(repos.router, prefix="/api/repos", tags=["repos"])
 
 
 @app.get("/")

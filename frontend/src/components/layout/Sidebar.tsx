@@ -11,6 +11,12 @@ const navItems = [
   { key: "codemaps", href: "/codemaps", icon: "🗺️" },
   { key: "knowledge", href: "/knowledge", icon: "🧠" },
   { key: "playbooks", href: "/playbooks", icon: "📋" },
+  { key: "repos", href: "/repos", icon: "📁" },
+  { key: "automations", href: "/automations", icon: "⚡" },
+  { key: "mcp", href: "/mcp", icon: "🔌" },
+  { key: "secrets", href: "/secrets", icon: "🔑" },
+  { key: "blueprints", href: "/blueprints", icon: "🏗️" },
+  { key: "apikeys", href: "/api-keys", icon: "🔐" },
   { key: "analytics", href: "/analytics", icon: "📊" },
   { key: "settings", href: "/settings", icon: "⚙️" },
 ];

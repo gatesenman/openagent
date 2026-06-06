@@ -19,7 +19,13 @@
     "newSession": "New Session",
     "knowledge": "Knowledge",
     "playbooks": "Playbooks",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "secrets": "Secrets",
+    "blueprints": "Blueprints",
+    "repos": "Repos",
+    "automations": "Automations",
+    "mcp": "MCP Market",
+    "apikeys": "API Keys"
   },
   "session": {
     "title": "Sessions",
@@ -101,5 +107,63 @@
     "toolCalls": "Tool Calls",
     "sessions": "Session Stats",
     "sandbox": "Sandbox Usage"
+  },
+  "secrets": {
+    "title": "Secrets Management",
+    "description": "Manage API Keys, passwords, and certificates. Only secret names are shown.",
+    "create": "Add Secret",
+    "name": "Secret Name",
+    "value": "Secret Value",
+    "scopeOrg": "Organization",
+    "scopeUser": "User",
+    "scopeRepo": "Repository",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "blueprints": {
+    "title": "Environment Blueprints",
+    "description": "Define Devbox initialization and maintenance workflows (YAML config)",
+    "create": "Create Blueprint",
+    "knowledgeItems": "knowledge items",
+    "preview": "Preview"
+  },
+  "repos": {
+    "title": "Repositories",
+    "description": "Manage connected Git repos, trigger DeepWiki indexing and CodeMap analysis",
+    "addRepo": "Add Repository",
+    "index": "Index"
+  },
+  "automations": {
+    "title": "Automations",
+    "description": "Configure automation rules for Agent to respond to events automatically",
+    "createRule": "Create Rule",
+    "trigger": "Trigger",
+    "action": "Action",
+    "edit": "Edit"
+  },
+  "mcp": {
+    "title": "MCP Marketplace",
+    "description": "Install and manage MCP tool servers to extend Agent capabilities",
+    "all": "All",
+    "tools": "tools",
+    "installed": "Installed",
+    "install": "Install"
+  },
+  "apikeys": {
+    "title": "API Keys",
+    "description": "Manage Service Users and API access credentials",
+    "createUser": "Create Service User",
+    "userName": "Name",
+    "userDescription": "Description",
+    "cancel": "Cancel",
+    "generate": "Generate API Key",
+    "disabled": "Disabled",
+    "lastUsed": "Last used",
+    "never": "Never",
+    "minutesAgo": "minutes ago",
+    "hoursAgo": "hours ago",
+    "daysAgo": "days ago",
+    "revoke": "Revoke"
   }
 }
