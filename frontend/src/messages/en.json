@@ -1,0 +1,75 @@
+{
+  "common": {
+    "appName": "OpenAgent",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "search": "Search",
+    "settings": "Settings",
+    "language": "Language"
+  },
+  "nav": {
+    "sessions": "Sessions",
+    "deepwiki": "DeepWiki",
+    "codemaps": "CodeMap",
+    "settings": "Settings",
+    "newSession": "New Session"
+  },
+  "session": {
+    "title": "Sessions",
+    "newSession": "New Session",
+    "noSessions": "No sessions yet. Click New Session to get started.",
+    "tabs": {
+      "chat": "Chat",
+      "worklog": "Worklog",
+      "terminal": "Terminal",
+      "changes": "Changes",
+      "desktop": "Desktop"
+    },
+    "status": {
+      "created": "Created",
+      "running": "Running",
+      "paused": "Paused",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "mode": {
+      "localhost": "Localhost",
+      "cascade": "Cascade",
+      "cloud": "Cloud"
+    },
+    "placeholder": "Describe what you need. The Agent will execute in a sandbox...",
+    "send": "Send"
+  },
+  "deepwiki": {
+    "title": "DeepWiki",
+    "description": "Symbol-level code documentation engine",
+    "indexRepo": "Index Repository",
+    "searchSymbols": "Search symbols...",
+    "sections": {
+      "definition": "Definition",
+      "exampleUsages": "Example Usages",
+      "notes": "Notes",
+      "seeAlso": "See Also",
+      "followUp": "Follow-up Questions"
+    }
+  },
+  "codemap": {
+    "title": "CodeMap",
+    "description": "Code structure visualization engine",
+    "analyzeProject": "Analyze Project",
+    "dependencyGraph": "Dependency Graph",
+    "codeFlow": "Code Flow",
+    "moduleOverview": "Module Overview"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "models": "Models",
+    "sandbox": "Sandbox",
+    "security": "Security"
+  }
+}

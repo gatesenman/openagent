@@ -1,0 +1,57 @@
+# OpenAgent - AI 驱动的全生命周期软件开发平台
+# Docker Compose 编排配置
+version: "3.9"
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: openagent
+      POSTGRES_USER: openagent
+      POSTGRES_PASSWORD: openagent_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openagent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 后端 API + Agent 引擎
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://openagent:openagent_dev@postgres:5432/openagent
+      SANDBOX_TYPE: docker
+      LLM_PROVIDER: openai
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Agent 沙箱需要 Docker 访问
+      - backend_workspace:/workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 前端 Web UI
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  backend_workspace:
