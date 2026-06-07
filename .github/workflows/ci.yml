@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main, scaffold]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-lint:
+    name: 后端代码检查
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+          pip install ruff pytest
+      - name: Lint
+        run: ruff check .
+      - name: Format check
+        run: ruff format --check .
+
+  backend-test:
+    name: 后端测试
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 验证导入
+        run: python -c "import sys; sys.path.insert(0, '.'); from app.main import app; print('OK:', app.title)"
+
+  frontend-lint:
+    name: 前端代码检查
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 安装依赖
+        run: npm install
+      - name: TypeScript 检查
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npm run lint
