@@ -10,38 +10,49 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 系统核心是**零幻觉开发**：通过真实环境执行 + 精准代码索引 + 实时验证反馈的闭环实现。
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       OpenAgent 架构                         │
-│                                                              │
-│  用户 ──→ 对话面板 ──→ Session API ──→ Agent引擎(ReAct)      │
-│                                          │                    │
-│                                   Think → Act → Observe       │
-│                                          │                    │
-│                                    ┌─────┴─────┐             │
-│                                    │  沙箱虚拟环境  │             │
-│                                    │ (Docker/KVM) │             │
-│                                    └───────────┘             │
-│                                          │                    │
-│              ┌──────────┬──────────┬─────┴────┐              │
-│              │          │          │          │              │
-│           Shell      File       Git      Search            │
-│           执行       读写       操作       搜索              │
-│                                                              │
-│  监控: Worklog(时间线) + Terminal(终端) + Desktop(桌面)       │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          OpenAgent 架构                                │
+│                                                                         │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────────┐  │
+│  │ Web App  │    │ Desktop  │    │   CLI    │    │  Agent Protocol  │  │
+│  │ (Next.js)│    │ (Tauri)  │    │ (Python) │    │ (MCP/A2A/AG-UI) │  │
+│  └─────┬────┘    └────┬─────┘    └────┬─────┘    └────────┬─────────┘  │
+│        └──────────────┼───────────────┼───────────────────┘            │
+│                       ▼                                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │              FastAPI Backend (REST + WebSocket + SSE)            │   │
+│  │                                                                   │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
+│  │  │ Agent 引擎 │  │ 沙箱虚拟化 │  │ 代码智能   │  │ 平台服务 │  │   │
+│  │  │            │  │            │  │            │  │          │  │   │
+│  │  │ ReAct循环  │  │ Docker容器 │  │ DeepWiki   │  │ 认证授权 │  │   │
+│  │  │ 任务规划   │  │ 文件系统   │  │ CodeMap    │  │ 计费管理 │  │   │
+│  │  │ 自我修复   │  │ 终端流     │  │ 语义搜索   │  │ 审计日志 │  │   │
+│  │  │ 模型路由   │  │ 桌面流     │  │ 交叉引用   │  │ MCP市场  │  │   │
+│  │  │ 上下文管理 │  │ 快照恢复   │  │ 代码度量   │  │ 自动化   │  │   │
+│  │  └────────────┘  └────────────┘  └────────────┘  └──────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                       │                                                 │
+│                       ▼                                                 │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  数据层: PostgreSQL + SQLite + Vector DB (Embedding)             │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 核心特性
 
 - **Agent 驱动开发** — 非传统 IDE 模式，Agent 主动规划并执行，用户通过对话监督审批
 - **三种运行模式** — Localhost（本地）/ Cascade（编辑器内）/ Cloud（云端虚拟机）
-- **零幻觉引擎** — 7 层能力栈保障每行代码都经过真实验证
+- **零幻觉引擎** — 7 层能力栈：沙箱隔离 → 工具调用 → 上下文工程 → 代码精准索引 → 实时执行 → 端到端验证 → 人类审批
 - **DeepWiki** — 仓库级自动文档生成，符号级定义/用法/注释/相关引用/深入问题
-- **CodeMap** — 代码结构可视化，流程图 + 依赖关系图 + 模块概览
-- **行业标准兼容** — JSON-RPC 2.0 / MCP / A2A / AG-UI / OpenAPI / OAuth 2.0 / AGENTS.md
+- **CodeMap** — 代码结构可视化：流程图 + 依赖关系图 + 调用图 + 代码度量
+- **OWASP 安全防护** — 基于 OWASP LLM Top 10 (2025) 的全面安全检查
+- **行业标准兼容** — JSON-RPC 2.0 / MCP / A2A / AG-UI / OpenAPI / OAuth 2.0 / AGENTS.md / llms.txt
 - **多模型支持** — GPT-4o / DeepSeek / Qwen / Claude / Ollama，智能路由自动选择
 - **中英双语** — 默认中文界面，支持英文切换（next-intl）
 - **沙箱隔离** — 每个 Session 独立 Docker 容器，安全隔离
+- **跨端支持** — Web + Desktop (Tauri) + CLI
 
 ### 界面截图
 
@@ -81,6 +92,14 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 
 ![环境快照](docs/screenshots/snapshots.png)
 
+#### 安全中心 — OWASP LLM Top 10
+
+![安全中心](docs/screenshots/security.png)
+
+#### 新手引导
+
+![新手引导](docs/screenshots/onboarding.png)
+
 #### 设置
 
 ![设置](docs/screenshots/settings.png)
@@ -91,11 +110,13 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 |---|---|
 | 前端 | Next.js 14, React 18, TypeScript, Tailwind CSS, next-intl |
 | 后端 | FastAPI, Python 3.12, SQLAlchemy, PostgreSQL 16 |
-| Agent 引擎 | ReAct 循环, Tree-sitter AST, Token 预算管理 |
-| 代码智能 | DeepWiki (符号文档), CodeMap (结构可视化) |
+| Agent 引擎 | ReAct 循环, Tree-sitter AST, Token 预算管理, 多模型智能路由 |
+| 代码智能 | DeepWiki (符号文档), CodeMap (结构可视化), 语义搜索 (Embedding) |
 | 虚拟环境 | Docker (Phase 1), KVM/QEMU (Phase 2) |
 | 通信 | JSON-RPC 2.0, SSE, WebSocket |
-| 协议 | MCP (工具连接), AG-UI (事件流), A2A (Agent协作) |
+| 协议 | MCP (工具连接), AG-UI (事件流), A2A (Agent协作), AGENTS.md |
+| 安全 | OWASP LLM Top 10, JWT + RBAC, 危险命令拦截, 敏感文件保护 |
+| 跨端 | Tauri 2.x (桌面), CLI (命令行) |
 
 ### 快速开始
 
@@ -130,71 +151,107 @@ npm run dev
 openagent/
 ├── backend/                    # FastAPI 后端
 │   ├── app/
-│   │   ├── api/                # REST API 路由
+│   │   ├── api/                # REST API 路由 (35 个模块)
 │   │   │   ├── sessions.py     # 会话 CRUD + SSE 流
 │   │   │   ├── agents.py       # Agent 信息 + 沙箱管理
 │   │   │   ├── tools.py        # 工具注册 + 执行
 │   │   │   ├── deepwiki.py     # DeepWiki 索引/搜索/文档
-│   │   │   └── codemaps.py     # CodeMap 分析/依赖/流程
+│   │   │   ├── codemaps.py     # CodeMap 分析/依赖/流程
+│   │   │   ├── auth.py         # JWT 认证
+│   │   │   ├── knowledge.py    # 知识库管理
+│   │   │   ├── playbooks.py    # 任务模板
+│   │   │   ├── secrets.py      # 密钥管理
+│   │   │   ├── blueprints.py   # 环境蓝图
+│   │   │   ├── repos.py        # 仓库管理
+│   │   │   ├── onboarding.py   # 新手引导
+│   │   │   ├── security.py     # OWASP 安全扫描
+│   │   │   ├── discovery.py    # llms.txt / agents.txt
+│   │   │   ├── billing.py      # 计费管理
+│   │   │   ├── batch.py        # 批量会话
+│   │   │   ├── cicd.py         # CI/CD 集成
+│   │   │   ├── audit.py        # 审计日志
+│   │   │   └── ...             # 更多模块
 │   │   ├── agent/              # Agent 引擎
 │   │   │   ├── react_engine.py # ReAct 循环核心
-│   │   │   ├── context.py      # 上下文管理 (128K预算)
-│   │   │   ├── planner.py      # 任务规划器
-│   │   │   ├── validators.py   # 输出验证 (危险命令检测)
-│   │   │   └── tools/          # 5个内置工具
+│   │   │   ├── context_manager.py # 128K Token 预算管理
+│   │   │   ├── self_healing.py # 自我修复引擎
+│   │   │   ├── model_router.py # 多模型智能路由
+│   │   │   ├── task_planner.py # 任务分解引擎
+│   │   │   ├── planner.py      # 规划器
+│   │   │   ├── validators.py   # 输出验证 + 危险命令检测
+│   │   │   └── tools/          # 5 个内置工具
+│   │   │       ├── shell_exec.py
+│   │   │       ├── file_ops.py
+│   │   │       ├── git_ops.py
+│   │   │       ├── search_code.py
+│   │   │       └── base.py
 │   │   ├── sandbox/            # 沙箱虚拟化层
-│   │   │   ├── base.py         # 抽象基类 (14个方法)
+│   │   │   ├── base.py         # 抽象基类 (14 个方法)
 │   │   │   ├── docker_sandbox.py  # Docker 容器沙箱
 │   │   │   ├── local_sandbox.py   # 本地进程沙箱
 │   │   │   └── manager.py     # 沙箱管理器 (生命周期)
-│   │   ├── services/           # 业务服务
+│   │   ├── services/           # 业务服务层 (25+ 服务)
 │   │   │   ├── deepwiki/       # DeepWiki 引擎
-│   │   │   │   ├── parser.py           # AST 解析器
-│   │   │   │   ├── symbol_extractor.py # 符号提取器
-│   │   │   │   ├── doc_generator.py    # 5段式文档生成
-│   │   │   │   ├── embedding_service.py# 向量嵌入
-│   │   │   │   └── indexer.py          # 仓库索引器
 │   │   │   ├── codemap/        # CodeMap 引擎
-│   │   │   │   ├── analyzer.py         # 代码分析器
-│   │   │   │   ├── dependency_graph.py # 依赖关系图
-│   │   │   │   └── flow_generator.py   # 流程图生成器
+│   │   │   ├── knowledge/      # 知识库管理
+│   │   │   ├── playbook/       # 任务模板
 │   │   │   ├── llm_service.py  # 多模型 LLM 路由
 │   │   │   ├── session_service.py # 会话服务
-│   │   │   └── tool_service.py # 工具服务
+│   │   │   ├── git_service.py  # Git 集成
+│   │   │   ├── security_service.py # OWASP 安全检查
+│   │   │   ├── onboarding_service.py # 新手引导
+│   │   │   ├── memory_service.py # 三级记忆体系
+│   │   │   ├── billing_service.py # ACU 计费
+│   │   │   ├── event_sourcing.py # 事件溯源
+│   │   │   └── ...
 │   │   ├── protocols/          # 协议层
 │   │   │   ├── jsonrpc.py      # JSON-RPC 2.0
 │   │   │   ├── mcp.py          # MCP Client/Server
-│   │   │   └── agui.py         # AG-UI 事件标准
+│   │   │   ├── a2a.py          # A2A Agent 协作
+│   │   │   └── agui.py         # AG-UI 16 种事件
 │   │   ├── models/             # 数据模型
 │   │   ├── schemas/            # Pydantic schemas
-│   │   ├── core/               # 核心配置
+│   │   ├── core/               # 核心配置 (Auth/RBAC/Telemetry)
 │   │   └── main.py             # 应用入口
+│   ├── tests/                  # 103 个测试
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/                   # Next.js 前端
 │   ├── src/
-│   │   ├── app/                # App Router 页面
-│   │   │   ├── sessions/       # 会话管理
-│   │   │   ├── deepwiki/       # DeepWiki 页面
-│   │   │   ├── codemaps/       # CodeMap 页面
-│   │   │   └── settings/       # 设置页面
+│   │   ├── app/                # 30 个页面
+│   │   │   ├── sessions/       # 会话管理 + 详情 (6 标签页)
+│   │   │   ├── deepwiki/       # DeepWiki
+│   │   │   ├── codemaps/       # CodeMap
+│   │   │   ├── knowledge/      # 知识库
+│   │   │   ├── playbooks/      # 任务模板
+│   │   │   ├── security/       # 安全中心
+│   │   │   ├── onboarding/     # 新手引导
+│   │   │   ├── analytics/      # 分析仪表盘
+│   │   │   ├── settings/       # 设置 (6 Tab)
+│   │   │   └── ...             # 更多页面
 │   │   ├── components/         # React 组件
-│   │   │   ├── session/        # Chat/Worklog/Terminal
+│   │   │   ├── session/        # Chat/Worklog/Terminal/Editor/Changes/Desktop
 │   │   │   ├── layout/         # Sidebar 等布局
 │   │   │   ├── deepwiki/       # DeepWiki 组件
 │   │   │   └── codemap/        # CodeMap 组件
-│   │   ├── lib/                # API客户端/工具库
-│   │   └── messages/           # i18n 翻译 (zh/en)
+│   │   ├── lib/                # API 客户端 / 工具库
+│   │   └── messages/           # i18n 翻译 (zh/en, 280+ keys)
 │   ├── Dockerfile
 │   └── package.json
+├── cli/                        # CLI 工具 (init/start/session/handoff)
+├── desktop/                    # Tauri 桌面客户端 (Windows/macOS/Linux)
+├── docs/                       # 文档和截图
 ├── docker-compose.yml          # 服务编排
 ├── Makefile                    # 常用命令
-├── AGENTS.md                   # Agent 配置
+├── AGENTS.md                   # Agent 配置规范
+├── CONTRIBUTING.md             # 贡献指南
 ├── .env.example                # 环境变量模板
 └── .github/workflows/ci.yml   # GitHub Actions CI
 ```
 
-### API 概览
+### API 概览 (220+ 路由)
+
+#### 核心 API
 
 | 接口 | 方法 | 说明 |
 |------|------|------|
@@ -205,20 +262,69 @@ openagent/
 | `/api/sessions/{id}/events` | GET | 事件历史 (Worklog) |
 | `/ws/terminal/{id}` | WebSocket | 实时终端 |
 | `/ws/events/{id}` | WebSocket | 实时事件流 |
+
+#### 代码智能
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
 | `/api/deepwiki/index` | POST | 索引仓库 |
 | `/api/deepwiki/symbols/{name}` | GET | 符号文档 |
 | `/api/deepwiki/search` | POST | 语义搜索 |
 | `/api/codemaps/analyze` | POST | 模块分析 |
 | `/api/codemaps/dependencies` | POST | 依赖图 |
 | `/api/codemaps/flow` | POST | 代码流程图 |
-| `/api/agents` | GET | Agent 信息 |
-| `/api/tools` | GET/POST | 工具列表/执行 |
+| `/api/codemaps/call-graph` | POST | 调用图 |
+| `/api/codemaps/metrics` | POST | 代码度量 |
+
+#### 平台服务
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/auth/login` | POST | JWT 登录 |
+| `/api/auth/register` | POST | 用户注册 |
+| `/api/knowledge` | GET/POST | 知识库 CRUD |
+| `/api/playbooks` | GET/POST | 任务模板 |
+| `/api/secrets` | GET/POST | 密钥管理 |
+| `/api/blueprints` | GET/POST | 环境蓝图 |
+| `/api/repos` | GET/POST | 仓库管理 |
+| `/api/mcp/marketplace` | GET | MCP 工具市场 |
+| `/api/billing` | GET | 计费管理 |
+| `/api/batch` | POST | 批量会话 |
+| `/api/cicd` | GET/POST | CI/CD 流水线 |
+| `/api/audit` | GET | 审计日志 |
+| `/api/onboarding/*` | GET/POST | 新手引导 |
+| `/api/security/*` | POST | OWASP 安全扫描 |
+
+#### Agent 发现协议
+
+| 接口 | 说明 |
+|------|------|
+| `/llms.txt` | LLM 能力声明 |
+| `/agents.txt` | Agent 发现协议 |
+| `/.well-known/agent.json` | A2A Agent Card |
+| `/mcp/rpc` | MCP JSON-RPC 端点 |
+| `/a2a/` | A2A 协议端点 |
 
 ### 路线图
 
-- [x] **Phase 1 MVP** — Agent引擎 + Docker沙箱 + DeepWiki + CodeMap + 前端UI
-- [ ] **Phase 2 智能** — KVM虚拟机 + Windows支持 + MCP Marketplace + A2A协议
-- [ ] **Phase 3 企业** — 自动化 + Analytics + SSO/RBAC + 桌面客户端
+- [x] **Phase 1 MVP** — Agent 引擎 + Docker 沙箱 + DeepWiki + CodeMap + 前端 UI + 协议栈
+  - [x] ReAct 循环引擎 + 5 个内置工具
+  - [x] Docker 容器沙箱 (三模式)
+  - [x] DeepWiki 符号级文档 + 交叉引用
+  - [x] CodeMap 依赖图 + 调用图 + 代码度量
+  - [x] 30 个前端页面 + 中英双语 i18n
+  - [x] JWT 认证 + RBAC 权限
+  - [x] MCP + A2A + AG-UI + JSON-RPC 2.0
+  - [x] 事件溯源 + 会话回放
+  - [x] OWASP LLM Top 10 安全防护
+  - [x] 新手引导 + 示例项目 + Prompt 模板
+  - [x] CLI 工具 + Tauri 桌面客户端
+  - [x] llms.txt / agents.txt 发现协议
+  - [x] 计费引擎 (ACU 分档)
+  - [x] CI/CD 集成 + 批量会话
+  - [x] 103 个自动化测试
+- [ ] **Phase 2 智能增强** — KVM 虚拟机 + Windows 支持 + MCP Marketplace 实际安装
+- [ ] **Phase 3 企业级** — SSO/SAML + SOC2 合规 + 多集群部署
 
 ---
 
@@ -235,11 +341,13 @@ OpenAgent is an AI-driven virtualized software development platform supporting f
 - **Three Running Modes** — Localhost / Cascade (in-editor) / Cloud (remote VM)
 - **Zero-Hallucination Engine** — 7-layer capability stack ensures every line of code is verified in real environment
 - **DeepWiki** — Repository-level auto documentation with symbol-level definitions/usage/notes/references/follow-ups
-- **CodeMap** — Code structure visualization with flow diagrams + dependency graphs + module overview
-- **Industry Standards** — JSON-RPC 2.0 / MCP / A2A / AG-UI / OpenAPI / OAuth 2.0 / AGENTS.md
+- **CodeMap** — Code structure visualization with flow diagrams + dependency graphs + call graphs + code metrics
+- **OWASP Security** — OWASP LLM Top 10 (2025) based security protection
+- **Industry Standards** — JSON-RPC 2.0 / MCP / A2A / AG-UI / OpenAPI / OAuth 2.0 / AGENTS.md / llms.txt
 - **Multi-Model Support** — GPT-4o / DeepSeek / Qwen / Claude / Ollama with intelligent routing
 - **Bilingual** — Chinese default with English support (next-intl)
 - **Sandbox Isolation** — Each session runs in its own Docker container
+- **Cross-Platform** — Web + Desktop (Tauri) + CLI
 
 ### Quick Start
 
@@ -251,6 +359,17 @@ docker-compose up -d
 ```
 
 Visit http://localhost:3000
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| Source Files | 200+ |
+| Lines of Code | ~26,000 |
+| API Routes | 220+ |
+| Frontend Pages | 30 |
+| Automated Tests | 103 |
+| i18n Keys | 280+ |
 
 ### License
 

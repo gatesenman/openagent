@@ -23,7 +23,9 @@ const navItems = [
   { key: "cicd", href: "/cicd", icon: "🔄" },
   { key: "snapshots", href: "/snapshots", icon: "📦" },
   { key: "schedules", href: "/schedules", icon: "🕐" },
+  { key: "security", href: "/security", icon: "🛡️" },
   { key: "analytics", href: "/analytics", icon: "📊" },
+  { key: "onboarding", href: "/onboarding", icon: "🚀" },
   { key: "settings", href: "/settings", icon: "⚙️" },
 ];
 

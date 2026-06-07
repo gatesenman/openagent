@@ -31,7 +31,9 @@
     "batch": "批量会话",
     "cicd": "CI/CD",
     "snapshots": "环境快照",
-    "schedules": "调度管理"
+    "schedules": "调度管理",
+    "onboarding": "新手引导",
+    "security": "安全中心"
   },
   "session": {
     "title": "会话",
@@ -225,5 +227,52 @@
     "hoursAgo": "小时前",
     "daysAgo": "天前",
     "revoke": "撤销"
+  },
+  "onboarding": {
+    "title": "新手引导",
+    "subtitle": "快速上手 OpenAgent，让 AI Agent 为你编写代码",
+    "stepsTitle": "设置步骤",
+    "step_welcome": "欢迎使用 OpenAgent",
+    "step_welcome_desc": "了解 OpenAgent 的核心理念：AI 驱动的全生命周期开发",
+    "step_choose_mode": "选择运行模式",
+    "step_choose_mode_desc": "Localhost / Cascade / Cloud 三种模式",
+    "step_connect_repo": "连接代码仓库",
+    "step_connect_repo_desc": "连接 GitHub / GitLab 仓库",
+    "step_configure_llm": "配置 LLM 模型",
+    "step_configure_llm_desc": "选择 GPT-4o / DeepSeek / Qwen / Claude / Ollama",
+    "step_first_session": "创建第一个会话",
+    "step_first_session_desc": "体验 ReAct 循环的强大能力",
+    "step_explore_deepwiki": "探索 DeepWiki",
+    "step_explore_deepwiki_desc": "查看自动生成的符号级文档",
+    "step_explore_codemap": "探索 CodeMap",
+    "step_explore_codemap_desc": "可视化代码结构和依赖关系",
+    "continueSetup": "继续设置",
+    "skipOnboarding": "跳过引导",
+    "sampleProjects": "示例项目",
+    "promptTemplates": "Prompt 模板库",
+    "beginner": "入门",
+    "intermediate": "进阶",
+    "fullstackBlog": "全栈博客系统",
+    "cliTool": "CLI 工具开发",
+    "fixBug": "修复 Bug",
+    "addFeature": "添加功能",
+    "refactorCode": "代码重构",
+    "writeTests": "编写测试",
+    "codeReview": "代码审查",
+    "apiDesign": "API 设计"
+  },
+  "security": {
+    "title": "安全中心",
+    "subtitle": "基于 OWASP LLM Top 10 的安全防护体系",
+    "blockedInjections": "拦截注入攻击",
+    "commandsChecked": "命令安全检查",
+    "sensitiveFilesBlocked": "敏感文件拦截",
+    "riskScore": "安全评分",
+    "ruleName": "规则名称",
+    "riskLevel": "风险等级",
+    "status": "状态",
+    "patterns": "检测规则数",
+    "dangerousCommands": "危险命令拦截记录",
+    "blocked": "拦截次数"
   }
 }
