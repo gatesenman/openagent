@@ -840,3 +840,172 @@ def test_agent_json(client):
     assert "a2a" in data["protocols"]
     assert "ag_ui" in data["protocols"]
     assert len(data["capabilities"]) >= 5
+
+
+# ============================================================
+# Codex Security Engine Tests
+# ============================================================
+
+def test_codex_capabilities(client):
+    resp = client.get("/api/codex/capabilities")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["engine"] == "Codex Security"
+    caps = data["capabilities"]
+    assert "sast" in caps
+    assert "secret_detection" in caps
+    assert "sca" in caps
+    assert "license_compliance" in caps
+    assert "iac_security" in caps
+    assert "sbom" in caps
+    assert "compliance" in caps
+    assert "policy_engine" in caps
+    assert caps["sast"]["rules_count"] >= 10
+
+
+def test_codex_sast_scan(client):
+    code = 'password = "super_secret_123"\nos.system("rm -rf " + user_input)'
+    resp = client.post("/api/codex/scan/sast", json={
+        "source_code": code, "filename": "app.py", "language": "python"
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["scan_type"] == "sast"
+    assert data["total_findings"] >= 1
+
+
+def test_codex_sast_clean_code(client):
+    code = "def hello():\n    return 'world'"
+    resp = client.post("/api/codex/scan/sast", json={
+        "source_code": code, "filename": "clean.py", "language": "python"
+    })
+    assert resp.status_code == 200
+    assert resp.json()["total_findings"] == 0
+
+
+def test_codex_secret_scan(client):
+    code = 'aws_key = "AKIAIOSFODNN7EXAMPLE1"\ntoken = "ghp_abc123def456ghi789jkl012mno345pqr678"'
+    resp = client.post("/api/codex/scan/secrets", json={
+        "content": code, "filename": "config.py"
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["scan_type"] == "secret"
+    assert data["total_findings"] >= 1
+
+
+def test_codex_secret_scan_clean(client):
+    code = "name = 'hello'\nvalue = 42"
+    resp = client.post("/api/codex/scan/secrets", json={"content": code})
+    assert resp.status_code == 200
+    assert resp.json()["total_findings"] == 0
+
+
+def test_codex_dependency_scan(client):
+    deps = [
+        {"name": "lodash", "version": "4.17.0", "ecosystem": "npm"},
+        {"name": "express", "version": "4.19.0", "ecosystem": "npm"},
+    ]
+    resp = client.post("/api/codex/scan/dependencies", json={"dependencies": deps})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["scan_type"] == "sca"
+    assert data["total_findings"] >= 1
+
+
+def test_codex_license_check(client):
+    pkgs = [
+        {"name": "react", "version": "18.2.0", "license": "MIT"},
+        {"name": "linux-kernel", "version": "6.0", "license": "GPL-3.0"},
+        {"name": "mongo-driver", "version": "1.0", "license": "SSPL-1.0"},
+    ]
+    resp = client.post("/api/codex/scan/licenses", json={"packages": pkgs})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["compliant_count"] >= 1
+    assert data["non_compliant_count"] >= 1
+
+
+def test_codex_iac_scan(client):
+    dockerfile = 'FROM python:latest\nEXPOSE 8000\nRUN pip install flask'
+    resp = client.post("/api/codex/scan/iac", json={
+        "content": dockerfile, "filename": "Dockerfile"
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["scan_type"] == "iac"
+    assert data["total_findings"] >= 1
+
+
+def test_codex_sbom(client):
+    pkgs = [
+        {"name": "fastapi", "version": "0.104.0", "ecosystem": "pypi", "license": "MIT"},
+        {"name": "pydantic", "version": "2.5.0", "ecosystem": "pypi", "license": "MIT"},
+    ]
+    resp = client.post("/api/codex/sbom", json={"packages": pkgs, "project_name": "openagent"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["bomFormat"] == "CycloneDX"
+    assert data["specVersion"] == "1.5"
+    assert data["totalComponents"] == 2
+
+
+def test_codex_compliance_soc2(client):
+    resp = client.post("/api/codex/compliance", json={
+        "framework": "soc2",
+        "enabled_features": {"auth_required": True, "rbac_enabled": True, "audit_logging": True}
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["framework"] == "soc2"
+    assert data["total_controls"] >= 5
+    assert "pass_rate" in data
+
+
+def test_codex_compliance_gdpr(client):
+    resp = client.post("/api/codex/compliance", json={
+        "framework": "gdpr",
+        "enabled_features": {"access_control": True, "encryption_in_transit": True, "audit_logging": True}
+    })
+    assert resp.status_code == 200
+    assert resp.json()["framework"] == "gdpr"
+
+
+def test_codex_compliance_unknown(client):
+    resp = client.post("/api/codex/compliance", json={"framework": "unknown_fw"})
+    assert resp.status_code == 200
+    assert "error" in resp.json()
+
+
+def test_codex_policies(client):
+    resp = client.get("/api/codex/policies")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] >= 6
+    actions = {p["action"] for p in data["policies"]}
+    assert "block" in actions
+    assert "warn" in actions
+
+
+def test_codex_full_scan(client):
+    code = 'api_key = "sk_live_abc123def456ghi789"\nos.system(user_input)'
+    resp = client.post("/api/codex/scan/full", json={
+        "source_code": code,
+        "filename": "main.py",
+        "language": "python",
+        "dependencies": [{"name": "lodash", "version": "4.17.0", "ecosystem": "npm"}],
+        "packages_with_licenses": [{"name": "gpl-lib", "version": "1.0", "license": "GPL-3.0"}],
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "dashboard" in data
+    assert "sast_findings" in data
+    assert "secret_findings" in data
+    assert "policy_violations" in data
+    assert data["dashboard"]["risk_score"] <= 100
+
+
+def test_codex_scan_history(client):
+    resp = client.get("/api/codex/scan-history")
+    assert resp.status_code == 200
+    assert "history" in resp.json()
