@@ -47,6 +47,9 @@ logs/
 htmlcov/
 .pytest_cache/
 
+# Rust/Tauri build
+desktop/src-tauri/target/
+
 # Build
 *.tar.gz
 *.whl
