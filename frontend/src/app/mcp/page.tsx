@@ -26,7 +26,7 @@ export default function MCPMarketPage() {
   ]);
   const [filter, setFilter] = useState<string>("all");
 
-  const categories = ["all", ...new Set(servers.map((s) => s.category))];
+  const categories = ["all", ...Array.from(new Set(servers.map((s) => s.category)))];
   const filtered = filter === "all" ? servers : servers.filter((s) => s.category === filter);
 
   return (

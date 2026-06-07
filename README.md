@@ -72,7 +72,19 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 
 ![CodeMap 可视化](docs/screenshots/codemap.png)
 
-#### 设置 — 统一配置中心
+#### 安全中心 — Codex Security Engine & OWASP LLM Top 10
+
+![安全中心](docs/screenshots/security.png)
+
+#### 自动化 — Agent 自动响应规则
+
+![自动化](docs/screenshots/automations.png)
+
+#### 新手引导 — 7 步交互式教程
+
+![新手引导](docs/screenshots/onboarding.png)
+
+#### 设置 — 统一配置中心 (18 个分类)
 
 ![设置](docs/screenshots/settings.png)
 
@@ -89,6 +101,17 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 | 协议 | MCP (工具连接), AG-UI (事件流), A2A (Agent协作), AGENTS.md |
 | 安全 | OWASP LLM Top 10, JWT + RBAC, 危险命令拦截, 敏感文件保护 |
 | 跨端 | Tauri 2.x (桌面), CLI (命令行) |
+
+### 下载安装
+
+从 [GitHub Releases](https://github.com/gaosichun888/openagent/releases) 下载对应平台安装包：
+
+| 平台 | 安装包 | 说明 |
+|------|--------|------|
+| Windows | `OpenAgent_0.1.0_x64-setup.exe` | Windows 10/11 (64-bit) |
+| macOS | `OpenAgent_0.1.0_x64.dmg` | macOS 12+ (Intel / Apple Silicon) |
+| Linux (Deb) | `openagent_0.1.0_amd64.deb` | Ubuntu 22.04+ / Debian 12+ |
+| Linux (AppImage) | `OpenAgent_0.1.0_amd64.AppImage` | 通用 Linux |
 
 ### 快速开始
 
@@ -115,6 +138,15 @@ uvicorn app.main:app --reload --port 8000
 cd frontend
 npm install
 npm run dev
+```
+
+#### Desktop 客户端（Tauri）
+
+```bash
+cd desktop
+npm install
+npm run tauri dev    # 开发模式
+npm run tauri build  # 构建安装包
 ```
 
 ### 项目结构
@@ -335,6 +367,17 @@ OpenAgent is an AI-driven virtualized software development platform supporting f
 - **Sandbox Isolation** — Each session runs in its own Docker container
 - **Cross-Platform** — Web + Desktop (Tauri) + CLI
 
+### Download
+
+Download platform-specific installers from [GitHub Releases](https://github.com/gaosichun888/openagent/releases):
+
+| Platform | Package | Requirements |
+|----------|---------|-------------|
+| Windows | `OpenAgent_0.1.0_x64-setup.exe` | Windows 10/11 (64-bit) |
+| macOS | `OpenAgent_0.1.0_x64.dmg` | macOS 12+ |
+| Linux (Deb) | `openagent_0.1.0_amd64.deb` | Ubuntu 22.04+ / Debian 12+ |
+| Linux (AppImage) | `OpenAgent_0.1.0_amd64.AppImage` | Universal Linux |
+
 ### Quick Start
 
 ```bash
@@ -350,11 +393,12 @@ Visit http://localhost:3000
 
 | Metric | Value |
 |--------|-------|
-| Source Files | 200+ |
-| Lines of Code | ~26,000 |
+| Source Files | 230+ |
+| Lines of Code | ~28,000 |
 | API Routes | 220+ |
 | Frontend Pages | 30 |
-| Automated Tests | 103 |
+| Automated Tests | 153 |
+| Agent Intelligence Modules | 7 |
 | i18n Keys | 280+ |
 
 ### About

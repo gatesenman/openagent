@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/nicegui/nicegui/main/schemas/tauri.conf.json",
   "productName": "OpenAgent",
   "version": "0.1.0",
   "identifier": "com.openagent.desktop",
@@ -10,10 +9,9 @@
     "beforeDevCommand": ""
   },
   "app": {
-    "title": "OpenAgent",
     "windows": [
       {
-        "title": "OpenAgent - AI 驱动的全生命周期开发平台",
+        "title": "OpenAgent - AI Code Agent",
         "width": 1400,
         "height": 900,
         "minWidth": 1024,
