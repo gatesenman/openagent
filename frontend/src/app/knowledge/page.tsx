@@ -169,7 +169,7 @@ export default function KnowledgePage() {
               )}
             >
               <div className="flex items-center gap-2 mb-1">
-                {entry.pinned && <span className="text-xs">📌</span>}
+                {entry.pinned && <span className="text-xs text-yellow-400">[*]</span>}
                 <span className="text-sm font-medium truncate">{entry.name}</span>
                 <span className={cn("px-1.5 py-0.5 text-[10px] rounded", layerColors[entry.scope])}>
                   {layerLabels[entry.scope]}
@@ -197,7 +197,7 @@ export default function KnowledgePage() {
               <span className={cn("px-2 py-0.5 text-xs rounded", layerColors[selectedEntry.scope])}>
                 {layerLabels[selectedEntry.scope]}
               </span>
-              {selectedEntry.pinned && <span>📌</span>}
+              {selectedEntry.pinned && <span className="text-yellow-400">[pinned]</span>}
             </div>
             {selectedEntry.repo_path && (
               <div className="text-sm text-[var(--text-secondary)] mb-4">
@@ -220,7 +220,7 @@ export default function KnowledgePage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-[var(--text-secondary)]">
-            <span className="text-4xl mb-4">📚</span>
+            <span className="text-2xl mb-4 font-mono text-[var(--text-secondary)]">[Knowledge]</span>
             <p>选择一个知识条目查看详情</p>
             <p className="text-xs mt-2">三层体系: System(内置) / User(自定义) / Repo(仓库级)</p>
           </div>

@@ -1,35 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { IconBot, IconWrench, IconChart, IconPackage } from "@/components/icons/Icons";
+import { ReactNode } from "react";
 
 export default function AnalyticsPage() {
   const t = useTranslations("analytics");
 
-  const stats = [
-    {
-      label: t("llmCalls"),
-      value: "1,284",
-      change: "+12%",
-      icon: "🤖",
-    },
-    {
-      label: t("toolCalls"),
-      value: "3,456",
-      change: "+8%",
-      icon: "🔧",
-    },
-    {
-      label: t("sessions"),
-      value: "89",
-      change: "+23%",
-      icon: "📊",
-    },
-    {
-      label: t("sandbox"),
-      value: "42",
-      change: "+5%",
-      icon: "📦",
-    },
+  const stats: { label: string; value: string; change: string; icon: ReactNode }[] = [
+    { label: t("llmCalls"), value: "1,284", change: "+12%", icon: <IconBot className="w-6 h-6 text-indigo-400" /> },
+    { label: t("toolCalls"), value: "3,456", change: "+8%", icon: <IconWrench className="w-6 h-6 text-blue-400" /> },
+    { label: t("sessions"), value: "89", change: "+23%", icon: <IconChart className="w-6 h-6 text-green-400" /> },
+    { label: t("sandbox"), value: "42", change: "+5%", icon: <IconPackage className="w-6 h-6 text-yellow-400" /> },
   ];
 
   return (
@@ -44,7 +26,7 @@ export default function AnalyticsPage() {
             className="bg-[var(--bg-secondary)] rounded-lg p-4 border border-[var(--border)]"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">{stat.icon}</span>
+              <span>{stat.icon}</span>
               <span className="text-xs text-green-400">{stat.change}</span>
             </div>
             <div className="text-2xl font-bold">{stat.value}</div>

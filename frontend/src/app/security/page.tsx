@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { IconShield, IconSearch, IconLock, IconChart } from "@/components/icons/Icons";
+import { ReactNode } from "react";
 
 export default function SecurityPage() {
   const t = useTranslations("security");
@@ -31,11 +33,11 @@ export default function SecurityPage() {
     planned: "bg-gray-500/20 text-gray-400",
   };
 
-  const securityStats = [
-    { label: t("blockedInjections"), value: "342", icon: "🛡️" },
-    { label: t("commandsChecked"), value: "8,921", icon: "🔍" },
-    { label: t("sensitiveFilesBlocked"), value: "56", icon: "🔒" },
-    { label: t("riskScore"), value: "96.8", icon: "📊" },
+  const securityStats: { label: string; value: string; icon: ReactNode }[] = [
+    { label: t("blockedInjections"), value: "342", icon: <IconShield className="w-6 h-6 text-indigo-400" /> },
+    { label: t("commandsChecked"), value: "8,921", icon: <IconSearch className="w-6 h-6 text-blue-400" /> },
+    { label: t("sensitiveFilesBlocked"), value: "56", icon: <IconLock className="w-6 h-6 text-yellow-400" /> },
+    { label: t("riskScore"), value: "96.8", icon: <IconChart className="w-6 h-6 text-green-400" /> },
   ];
 
   const dangerousCommands = [
@@ -130,7 +132,7 @@ export default function SecurityPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {securityStats.map((stat) => (
           <div key={stat.label} className="bg-[var(--bg-secondary)] rounded-lg p-4 border border-[var(--border)]">
-            <div className="text-2xl mb-1">{stat.icon}</div>
+            <div className="mb-1">{stat.icon}</div>
             <div className="text-2xl font-bold">{stat.value}</div>
             <div className="text-sm text-[var(--text-secondary)]">{stat.label}</div>
           </div>

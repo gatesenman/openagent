@@ -66,7 +66,7 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
   if (!connected) {
     return (
       <div className="flex h-full flex-col items-center justify-center bg-zinc-950 p-8">
-        <div className="mb-4 text-6xl">🖥️</div>
+        <div className="mb-4 text-4xl font-mono text-[var(--text-secondary)]">[Desktop]</div>
         <h3 className="mb-2 text-lg font-semibold text-white">远程桌面</h3>
         <p className="mb-4 max-w-md text-center text-sm text-zinc-400">
           通过 noVNC 连接沙箱虚拟环境的桌面，实时观看 Agent 的 GUI 操作。
@@ -133,7 +133,7 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
             className="text-xs px-2 py-1 bg-zinc-800 text-zinc-300 rounded hover:bg-zinc-700"
             title="截屏"
           >
-            📸 截屏
+            Capture
           </button>
           <button
             onClick={() => setIsRecording(!isRecording)}
@@ -144,7 +144,7 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
             }`}
             title={isRecording ? "停止录制" : "开始录制"}
           >
-            {isRecording ? "⏹ 停止" : "⏺ 录制"}
+            {isRecording ? "Stop" : "Record"}
           </button>
           <button
             onClick={() => {
@@ -153,7 +153,7 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
             className="text-xs px-2 py-1 bg-zinc-800 text-zinc-300 rounded hover:bg-zinc-700"
             title="Ctrl+Alt+Del"
           >
-            ⌨️ CAD
+            CAD
           </button>
           <button
             onClick={disconnect}
@@ -171,7 +171,7 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
         style={{ background: "#1a1a2e" }}
       >
         <div className="text-center">
-          <div className="text-6xl mb-4 opacity-30">🖥️</div>
+          <div className="text-4xl mb-4 opacity-30 font-mono">[Desktop]</div>
           <p className="text-zinc-600 text-sm">
             桌面流已连接 — Agent 正在沙箱中操作
           </p>

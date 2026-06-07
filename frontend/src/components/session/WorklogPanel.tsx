@@ -16,17 +16,17 @@ interface WorklogPanelProps {
 }
 
 const typeIcons: Record<string, string> = {
-  "agent.thinking": "🧠",
-  "agent.action": "⚡",
-  "tool.call": "🔧",
-  "tool.result": "📋",
-  "file.write": "📝",
-  "file.read": "📖",
-  "sandbox.exec": "💻",
-  "git.commit": "📦",
-  "git.push": "🚀",
-  "agent.error": "❌",
-  "agent.complete": "✅",
+  "agent.thinking": "[T]",
+  "agent.action": "[A]",
+  "tool.call": "[C]",
+  "tool.result": "[R]",
+  "file.write": "[W]",
+  "file.read": "[R]",
+  "sandbox.exec": "[X]",
+  "git.commit": "[G]",
+  "git.push": "[P]",
+  "agent.error": "[!]",
+  "agent.complete": "[+]",
 };
 
 const mockEntries: WorklogEntry[] = [
@@ -113,7 +113,7 @@ export function WorklogPanel({ entries }: WorklogPanelProps) {
               <div className="flex-1 bg-[var(--bg-secondary)] rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">
-                    {typeIcons[entry.type] || "📌"}
+                    {typeIcons[entry.type] || "[*]"}
                   </span>
                   <span className="text-sm font-medium text-[var(--text-primary)]">
                     {entry.title}

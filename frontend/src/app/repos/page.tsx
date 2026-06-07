@@ -56,7 +56,7 @@ export default function ReposPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="text-xl">📁</span>
+                <span className="text-xs font-mono px-1 py-0.5 bg-indigo-500/10 text-indigo-400 rounded">REPO</span>
                 <div>
                   <div className="font-medium">{repo.name}</div>
                   <div className="text-sm text-[var(--text-secondary)]">{repo.description}</div>

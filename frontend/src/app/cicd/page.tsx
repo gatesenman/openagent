@@ -64,7 +64,7 @@ export default function CICDPage() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <span className="text-xl">
-                    {pl.status === "success" ? "✅" : pl.status === "running" ? "🔄" : "❌"}
+                    {pl.status === "success" ? "[OK]" : pl.status === "running" ? "[..]" : "[!!]"}
                   </span>
                   <div>
                     <h3 className="font-semibold">{pl.name}</h3>
@@ -74,9 +74,9 @@ export default function CICDPage() {
                 <span className={`px-2 py-1 rounded text-xs ${sc.color}`}>{sc.label}</span>
               </div>
               <div className="flex items-center gap-6 text-sm text-[var(--text-secondary)]">
-                <span>🌿 {pl.branch}</span>
-                <span>⏱ {pl.duration}</span>
-                <span>🕐 {pl.lastRun}</span>
+                <span>Branch: {pl.branch}</span>
+                <span>Duration: {pl.duration}</span>
+                <span>Last: {pl.lastRun}</span>
               </div>
             </div>
           );

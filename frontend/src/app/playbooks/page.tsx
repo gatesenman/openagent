@@ -214,7 +214,7 @@ export default function PlaybooksPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-[var(--text-secondary)]">
-            <span className="text-4xl mb-4">📋</span>
+            <span className="text-2xl mb-4 font-mono text-[var(--text-secondary)]">[Playbooks]</span>
             <p>选择一个 Playbook 查看详情</p>
             <p className="text-xs mt-2">6 个内置模板 + 自定义模板支持</p>
           </div>

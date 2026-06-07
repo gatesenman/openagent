@@ -66,8 +66,8 @@ export default function SnapshotsPage() {
                 <span className={`px-2 py-1 rounded text-xs ${sc.color}`}>{sc.label}</span>
               </div>
               <div className="flex items-center gap-6 text-sm text-[var(--text-secondary)]">
-                <span>💾 {snap.size}</span>
-                <span>🕐 {snap.created}</span>
+                <span>Size: {snap.size}</span>
+                <span>Created: {snap.created}</span>
               </div>
             </div>
           );
