@@ -56,9 +56,13 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 
 ### 界面截图
 
-#### 主页 — 三模式选择 & 会话管理
+#### 主页 — 三模式选择 & 会话启动
 
 ![OpenAgent 主页](docs/screenshots/home.png)
+
+#### 会话管理 — 多会话状态追踪
+
+![会话管理](docs/screenshots/sessions.png)
 
 #### DeepWiki — 符号级代码文档
 
@@ -68,39 +72,7 @@ OpenAgent 是一个 AI 驱动的虚拟化软件开发平台，支持从规划、
 
 ![CodeMap 可视化](docs/screenshots/codemap.png)
 
-#### 知识库 — 三层知识体系 (System / User / Repo)
-
-![知识库管理](docs/screenshots/knowledge.png)
-
-#### 任务模板 (Playbooks)
-
-![任务模板](docs/screenshots/playbooks.png)
-
-#### 分析面板
-
-![分析面板](docs/screenshots/analytics.png)
-
-#### CI/CD 流水线
-
-![CI/CD](docs/screenshots/cicd.png)
-
-#### 调度管理
-
-![调度管理](docs/screenshots/schedules.png)
-
-#### 环境快照
-
-![环境快照](docs/screenshots/snapshots.png)
-
-#### 安全中心 — OWASP LLM Top 10
-
-![安全中心](docs/screenshots/security.png)
-
-#### 新手引导
-
-![新手引导](docs/screenshots/onboarding.png)
-
-#### 设置
+#### 设置 — 统一配置中心
 
 ![设置](docs/screenshots/settings.png)
 
@@ -326,6 +298,20 @@ openagent/
 - [ ] **Phase 2 智能增强** — KVM 虚拟机 + Windows 支持 + MCP Marketplace 实际安装
 - [ ] **Phase 3 企业级** — SSO/SAML + SOC2 合规 + 多集群部署
 
+### 关于
+
+OpenAgent 是一个开源的 AI 驱动软件开发平台，将自主代码智能体能力整合到专业桌面应用中。灵感来源于 Codex、Devin 等行业领先工具，OpenAgent 结合 ReAct 推理引擎与虚拟化沙箱，实现安全、可验证的全生命周期软件开发 —— 从规划、编码到测试、调试和部署。
+
+**核心优势：**
+- **虚拟化执行** — 所有 Agent 操作在隔离的 Docker 容器中运行，确保安全性和可复现性
+- **零幻觉架构** — 真实环境执行 + 精准代码索引 + 实时验证反馈闭环
+- **跨端支持** — 原生桌面应用 (Tauri)、Web 应用 (Next.js)、命令行工具
+- **协议优先** — 基于行业标准：MCP 工具连接、AG-UI 事件流、A2A Agent 协作
+- **企业级安全** — OWASP LLM Top 10 合规、SAST/SCA 扫描、密钥检测、许可证合规
+
+**作者：** [gaosichun888](https://github.com/gaosichun888)  
+**仓库：** [github.com/gaosichun888/openagent](https://github.com/gaosichun888/openagent)
+
 ---
 
 <a id="english"></a>
@@ -370,6 +356,20 @@ Visit http://localhost:3000
 | Frontend Pages | 30 |
 | Automated Tests | 103 |
 | i18n Keys | 280+ |
+
+### About
+
+OpenAgent is an open-source, AI-driven software development platform that brings autonomous code agent capabilities to a professional desktop application. Inspired by industry-leading tools like Codex and Devin, OpenAgent combines a ReAct-based agent engine with virtualized sandboxing to enable safe, verifiable, full-lifecycle software development — from planning and coding to testing, debugging, and deployment.
+
+**Key Differentiators:**
+- **Virtualized Execution** — All agent operations run inside isolated Docker containers, ensuring safety and reproducibility
+- **Zero-Hallucination Architecture** — Real environment execution + precise code indexing + real-time verification feedback loop
+- **Cross-Platform** — Native desktop app (Tauri), web app (Next.js), and CLI interface
+- **Protocol-First** — Built on industry standards: MCP for tool connectivity, AG-UI for event streaming, A2A for agent collaboration
+- **Enterprise Security** — OWASP LLM Top 10 compliance, SAST/SCA scanning, secret detection, license compliance
+
+**Author:** [gaosichun888](https://github.com/gaosichun888)  
+**Repository:** [github.com/gaosichun888/openagent](https://github.com/gaosichun888/openagent)
 
 ### License
 

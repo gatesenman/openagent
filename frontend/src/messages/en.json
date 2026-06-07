@@ -13,9 +13,13 @@
   },
   "nav": {
     "sessions": "Sessions",
+    "ask": "Ask",
+    "wiki": "Wiki",
+    "review": "Review",
+    "automations": "Automations",
+    "settings": "Settings",
     "deepwiki": "DeepWiki",
     "codemaps": "CodeMap",
-    "settings": "Settings",
     "newSession": "New Session",
     "knowledge": "Knowledge",
     "playbooks": "Playbooks",
@@ -23,7 +27,6 @@
     "secrets": "Secrets",
     "blueprints": "Blueprints",
     "repos": "Repos",
-    "automations": "Automations",
     "mcp": "MCP Market",
     "apikeys": "API Keys",
     "membership": "Membership",
@@ -52,7 +55,10 @@
       "terminal": "Terminal",
       "editor": "Editor",
       "changes": "Changes",
-      "desktop": "Desktop"
+      "desktop": "Desktop",
+      "shell": "Shell",
+      "ide": "IDE",
+      "agents": "Agents"
     },
     "statusValues": {
       "created": "Created",

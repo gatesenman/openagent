@@ -4,252 +4,227 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-type SettingsTab = "general" | "models" | "sandbox" | "security" | "auth" | "protocols";
+type SettingsTab =
+  | "general" | "connections" | "sessions" | "plans"
+  | "agent" | "review" | "deepwiki" | "schedules"
+  | "desktop" | "skills" | "environment" | "knowledge"
+  | "playbooks" | "secrets" | "repos" | "membership"
+  | "apikeys" | "security" | "analytics";
+
+const settingsGroups = [
+  {
+    label: "Personal",
+    items: [
+      { key: "general" as const, label: "General" },
+      { key: "connections" as const, label: "Connections" },
+    ],
+  },
+  {
+    label: "Organization",
+    items: [
+      { key: "sessions" as const, label: "Sessions" },
+      { key: "plans" as const, label: "Plans & Billing" },
+      { key: "membership" as const, label: "Membership" },
+      { key: "apikeys" as const, label: "API Keys" },
+    ],
+  },
+  {
+    label: "Agent",
+    items: [
+      { key: "agent" as const, label: "Agent Config" },
+      { key: "review" as const, label: "Review" },
+      { key: "deepwiki" as const, label: "DeepWiki" },
+      { key: "schedules" as const, label: "Schedules" },
+      { key: "desktop" as const, label: "Desktop" },
+    ],
+  },
+  {
+    label: "Configuration",
+    items: [
+      { key: "skills" as const, label: "Skills & Rules" },
+      { key: "environment" as const, label: "Environment" },
+      { key: "knowledge" as const, label: "Knowledge" },
+      { key: "playbooks" as const, label: "Playbooks" },
+      { key: "secrets" as const, label: "Secrets" },
+      { key: "repos" as const, label: "Repositories" },
+      { key: "security" as const, label: "Security" },
+      { key: "analytics" as const, label: "Analytics" },
+    ],
+  },
+];
 
 export default function SettingsPage() {
-  const t = useTranslations("settings");
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
 
   return (
     <div className="flex h-full">
-      {/* 左侧菜单 */}
-      <div className="w-56 border-r border-[var(--border)] p-4">
-        <h2 className="text-lg font-semibold mb-4">{t("title")}</h2>
-        <nav className="space-y-1">
-          {(["general", "models", "sandbox", "security", "auth", "protocols"] as const).map(
-            (tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                  activeTab === tab
-                    ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                {t(tab)}
-              </button>
-            )
-          )}
-        </nav>
+      {/* Left menu */}
+      <div className="w-[200px] border-r border-[var(--border)] overflow-y-auto bg-[var(--bg-secondary)]">
+        <div className="panel-header">
+          <span className="text-[11px] font-medium uppercase tracking-wider">Settings</span>
+        </div>
+        <div className="p-2">
+        {settingsGroups.map((group) => (
+          <div key={group.label} className="mb-3">
+            <h3 className="text-[10px] text-[var(--text-secondary)] mb-1 px-2 uppercase tracking-wider font-medium">{group.label}</h3>
+            <nav className="space-y-px">
+              {group.items.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => setActiveTab(item.key)}
+                  className={cn(
+                    "w-full text-left px-2 py-1 rounded text-[12px] transition-all duration-100",
+                    activeTab === item.key
+                      ? "bg-[var(--accent-dim)] text-[var(--accent)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.02]"
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        ))}
+        </div>
       </div>
 
-      {/* 右侧内容 */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-2xl mx-auto space-y-6">
+      {/* Right content */}
+      <div className="flex-1 overflow-y-auto p-5">
+        <div className="max-w-2xl mx-auto space-y-4">
           {activeTab === "general" && <GeneralSettings />}
-          {activeTab === "models" && <ModelSettings />}
-          {activeTab === "sandbox" && <SandboxSettings />}
+          {activeTab === "connections" && <ConnectionsSettings />}
+          {activeTab === "sessions" && <SessionsSettings />}
+          {activeTab === "plans" && <PlansSettings />}
+          {activeTab === "membership" && <MembershipSettings />}
+          {activeTab === "apikeys" && <ApiKeysSettings />}
+          {activeTab === "agent" && <AgentSettings />}
+          {activeTab === "review" && <ReviewSettings />}
+          {activeTab === "deepwiki" && <DeepWikiSettings />}
+          {activeTab === "schedules" && <SchedulesSettings />}
+          {activeTab === "desktop" && <DesktopSettings />}
+          {activeTab === "skills" && <SkillsSettings />}
+          {activeTab === "environment" && <EnvironmentSettings />}
+          {activeTab === "knowledge" && <KnowledgeSettings />}
+          {activeTab === "playbooks" && <PlaybooksSettings />}
+          {activeTab === "secrets" && <SecretsSettings />}
+          {activeTab === "repos" && <ReposSettings />}
           {activeTab === "security" && <SecuritySettings />}
-          {activeTab === "auth" && <AuthSettings />}
-          {activeTab === "protocols" && <ProtocolSettings />}
+          {activeTab === "analytics" && <AnalyticsSettings />}
         </div>
       </div>
     </div>
   );
 }
 
-function SettingItem({
-  label,
-  description,
-  children,
-}: {
-  label: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
+function SettingItem({ label, description, children }: { label: string; description?: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-[var(--border)]">
+    <div className="flex items-center justify-between py-2.5 border-b border-[var(--border-subtle)]">
       <div>
-        <p className="text-sm font-medium">{label}</p>
-        {description && (
-          <p className="text-xs text-[var(--text-secondary)]">{description}</p>
-        )}
+        <p className="text-[12px] font-medium text-[var(--text-primary)]">{label}</p>
+        {description && <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">{description}</p>}
       </div>
       <div>{children}</div>
     </div>
   );
 }
 
+function SelectInput({ options, defaultValue }: { options: { value: string; label: string }[]; defaultValue?: string }) {
+  return (
+    <select defaultValue={defaultValue} className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-2 py-1 text-[11px] text-[var(--text-secondary)]">
+      {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  );
+}
+
 function GeneralSettings() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">通用设置</h3>
-      <SettingItem label="界面语言" description="选择默认界面语言">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="zh">中文</option>
-          <option value="en">English</option>
-        </select>
+      <h3 className="text-sm font-semibold mb-3">General</h3>
+      <SettingItem label="Language" description="Interface language">
+        <SelectInput options={[{ value: "zh", label: "Chinese" }, { value: "en", label: "English" }]} />
       </SettingItem>
-      <SettingItem label="主题" description="暗色 / 亮色主题切换">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="dark">暗色</option>
-          <option value="light">亮色</option>
-        </select>
+      <SettingItem label="Theme" description="Dark / Light theme">
+        <SelectInput options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }]} />
       </SettingItem>
-      <SettingItem label="默认运行模式">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="cloud">云端模式</option>
-          <option value="localhost">本地模式</option>
-          <option value="cascade">Cascade 模式</option>
-        </select>
+      <SettingItem label="Default Mode" description="Agent execution mode">
+        <SelectInput options={[{ value: "cloud", label: "Cloud" }, { value: "localhost", label: "Localhost" }, { value: "cascade", label: "Cascade" }]} />
       </SettingItem>
     </div>
   );
 }
 
-function ModelSettings() {
+function ConnectionsSettings() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">模型设置</h3>
-      <SettingItem label="默认模型" description="Agent 使用的默认 LLM">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="gpt-4o">GPT-4o</option>
-          <option value="deepseek-chat">DeepSeek Chat</option>
-          <option value="deepseek-coder">DeepSeek Coder</option>
-          <option value="qwen-plus">Qwen Plus</option>
-          <option value="claude-sonnet-4">Claude Sonnet 4</option>
-          <option value="llama3">Llama 3 (本地)</option>
-        </select>
+      <h3 className="text-sm font-semibold mb-3">Connections</h3>
+      <SettingItem label="GitHub" description="Connect GitHub account">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Connect</button>
       </SettingItem>
-      <SettingItem label="采样温度" description="0.0-1.0，越低越确定">
-        <input
-          type="number"
-          min="0"
-          max="1"
-          step="0.1"
-          defaultValue="0.1"
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20"
-        />
+      <SettingItem label="GitLab" description="Connect GitLab account">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Connect</button>
       </SettingItem>
-      <SettingItem label="最大迭代次数" description="ReAct 循环最大轮数">
-        <input
-          type="number"
-          min="1"
-          max="200"
-          defaultValue="50"
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20"
-        />
-      </SettingItem>
-      <SettingItem label="API Key" description="配置 LLM API Key">
-        <input
-          type="password"
-          placeholder="sk-..."
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-48"
-        />
+      <SettingItem label="Slack" description="Notifications integration">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Connect</button>
       </SettingItem>
     </div>
   );
 }
 
-function SandboxSettings() {
+function SessionsSettings() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">沙箱设置</h3>
-      <SettingItem label="沙箱类型" description="Docker 容器或本地进程">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="docker">Docker 容器</option>
-          <option value="local">本地进程</option>
-        </select>
+      <h3 className="text-sm font-semibold mb-3">Sessions</h3>
+      <SettingItem label="Auto-continue" description="Allow Agent to continue without confirmation">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
       </SettingItem>
-      <SettingItem label="CPU 限制" description="每个沙箱的 CPU 限制">
-        <input
-          type="number"
-          min="0.5"
-          max="8"
-          step="0.5"
-          defaultValue="2"
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20"
-        />
+      <SettingItem label="Max iterations" description="Maximum ReAct loop steps">
+        <input type="number" min="1" max="200" defaultValue="50" className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20" />
       </SettingItem>
-      <SettingItem label="内存限制" description="每个沙箱的内存限制">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="512m">512 MB</option>
-          <option value="1g">1 GB</option>
-          <option value="2g" selected>2 GB</option>
-          <option value="4g">4 GB</option>
-        </select>
-      </SettingItem>
-      <SettingItem label="Docker 镜像" description="沙箱使用的基础镜像">
-        <input
-          type="text"
-          defaultValue="ubuntu:22.04"
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-48"
-        />
+      <SettingItem label="Auto-fix lints" description="Automatically fix lint errors">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
       </SettingItem>
     </div>
   );
 }
 
-function AuthSettings() {
+function PlansSettings() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">认证设置</h3>
-      <SettingItem label="认证方式" description="用户认证机制">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="jwt">JWT Token</option>
-          <option value="oauth">OAuth 2.0</option>
-          <option value="oidc">OpenID Connect</option>
-        </select>
-      </SettingItem>
-      <SettingItem label="Token 过期时间" description="JWT Token 有效期（分钟）">
-        <input
-          type="number"
-          min="5"
-          max="1440"
-          defaultValue="480"
-          className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20"
-        />
-      </SettingItem>
-      <SettingItem label="SSO 集成" description="企业单点登录">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="none">未配置</option>
-          <option value="saml">SAML 2.0</option>
-          <option value="oidc">OIDC</option>
-        </select>
-      </SettingItem>
-      <SettingItem label="双因素认证" description="启用 TOTP 二次验证">
-        <input type="checkbox" className="w-4 h-4 accent-[var(--accent)]" />
+      <h3 className="text-sm font-semibold mb-3">Plans & Billing</h3>
+      <div className="bg-[var(--bg-secondary)] rounded-lg p-4 border border-[var(--border)] mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium">Current Plan</span>
+          <span className="px-2 py-0.5 rounded text-xs bg-indigo-500/20 text-indigo-400">Team</span>
+        </div>
+        <div className="text-2xl font-bold">$499<span className="text-sm text-[var(--text-secondary)]">/mo</span></div>
+        <div className="text-xs text-[var(--text-secondary)] mt-1">Renews: 2026-07-01</div>
+      </div>
+      <SettingItem label="ACU Used" description="Agent Compute Units this cycle">
+        <span className="text-sm font-mono">1,284 / 5,000</span>
       </SettingItem>
     </div>
   );
 }
 
-function ProtocolSettings() {
-  const protocols = [
-    { name: "JSON-RPC 2.0", status: "active", version: "2.0", desc: "基础通信层" },
-    { name: "MCP", status: "active", version: "1.0", desc: "工具连接协议" },
-    { name: "A2A", status: "active", version: "0.2", desc: "Agent间协作" },
-    { name: "AG-UI", status: "active", version: "0.1", desc: "Agent事件流" },
-    { name: "ACP", status: "planned", version: "-", desc: "编辑器协作" },
-    { name: "ANP", status: "planned", version: "-", desc: "Agent网络" },
-    { name: "OAuth 2.0", status: "active", version: "2.0", desc: "认证授权" },
-    { name: "OpenTelemetry", status: "partial", version: "1.0", desc: "可观测性" },
+function MembershipSettings() {
+  const members = [
+    { name: "Admin User", email: "admin@company.com", role: "admin" },
+    { name: "Developer", email: "dev@company.com", role: "member" },
   ];
-
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">协议状态</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Membership</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Invite Member</button>
+      </div>
       <div className="space-y-2">
-        {protocols.map((p) => (
-          <div key={p.name} className="flex items-center justify-between py-3 border-b border-[var(--border)]">
-            <div className="flex items-center gap-3">
-              <div className={`w-2 h-2 rounded-full ${
-                p.status === "active" ? "bg-green-500" :
-                p.status === "partial" ? "bg-yellow-500" : "bg-zinc-500"
-              }`} />
-              <div>
-                <p className="text-sm font-medium">{p.name} <span className="text-xs text-[var(--text-secondary)]">{p.version}</span></p>
-                <p className="text-xs text-[var(--text-secondary)]">{p.desc}</p>
-              </div>
+        {members.map((m) => (
+          <div key={m.email} className="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <div>
+              <div className="text-sm font-medium">{m.name}</div>
+              <div className="text-xs text-[var(--text-secondary)]">{m.email}</div>
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded ${
-              p.status === "active" ? "bg-green-500/20 text-green-400" :
-              p.status === "partial" ? "bg-yellow-500/20 text-yellow-400" : "bg-zinc-500/20 text-zinc-400"
-            }`}>
-              {p.status === "active" ? "已启用" : p.status === "partial" ? "部分实现" : "计划中"}
-            </span>
+            <span className="text-xs px-2 py-0.5 rounded bg-[var(--bg-secondary)]">{m.role}</span>
           </div>
         ))}
       </div>
@@ -257,30 +232,211 @@ function ProtocolSettings() {
   );
 }
 
+function ApiKeysSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">API Keys</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Create Service User</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Manage service users and API access credentials</p>
+    </div>
+  );
+}
+
+function AgentSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Agent Configuration</h3>
+      <SettingItem label="Default Model" description="LLM for Agent execution">
+        <SelectInput options={[
+          { value: "gpt-4o", label: "GPT-4o" },
+          { value: "deepseek-chat", label: "DeepSeek Chat" },
+          { value: "claude-sonnet-4", label: "Claude Sonnet 4" },
+          { value: "qwen-plus", label: "Qwen Plus" },
+          { value: "llama3", label: "Llama 3 (Local)" },
+        ]} />
+      </SettingItem>
+      <SettingItem label="Temperature" description="0.0-1.0, lower is more deterministic">
+        <input type="number" min="0" max="1" step="0.1" defaultValue="0.1" className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-20" />
+      </SettingItem>
+      <SettingItem label="Sandbox Type" description="Container or local process">
+        <SelectInput options={[{ value: "docker", label: "Docker Container" }, { value: "local", label: "Local Process" }]} />
+      </SettingItem>
+      <SettingItem label="Docker Image" description="Base image for sandbox">
+        <input type="text" defaultValue="ubuntu:22.04" className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm w-40" />
+      </SettingItem>
+    </div>
+  );
+}
+
+function ReviewSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Review</h3>
+      <SettingItem label="Auto-review PRs" description="Agent reviews PRs automatically">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
+      </SettingItem>
+      <SettingItem label="Review depth" description="Security / Code quality / Performance">
+        <SelectInput options={[{ value: "standard", label: "Standard" }, { value: "deep", label: "Deep" }, { value: "security", label: "Security-focused" }]} />
+      </SettingItem>
+    </div>
+  );
+}
+
+function DeepWikiSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">DeepWiki</h3>
+      <SettingItem label="Auto-index" description="Automatically index repos on connect">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
+      </SettingItem>
+      <SettingItem label="Embedding model" description="Model for symbol embeddings">
+        <SelectInput options={[{ value: "openai", label: "OpenAI ada-002" }, { value: "local", label: "Local (all-MiniLM-L6)" }]} />
+      </SettingItem>
+    </div>
+  );
+}
+
+function SchedulesSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Schedules</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Create Schedule</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Configure scheduled tasks for Agent to run periodically</p>
+    </div>
+  );
+}
+
+function DesktopSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Desktop</h3>
+      <SettingItem label="Resolution" description="Virtual desktop resolution">
+        <SelectInput options={[{ value: "1280x800", label: "1280 x 800" }, { value: "1920x1080", label: "1920 x 1080" }]} />
+      </SettingItem>
+      <SettingItem label="Auto-screenshot" description="Capture screenshots during agent work">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
+      </SettingItem>
+    </div>
+  );
+}
+
+function SkillsSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Skills & Rules</h3>
+      <SettingItem label="Global rules" description="Rules applied to all sessions">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Edit</button>
+      </SettingItem>
+      <SettingItem label="AGENTS.md" description="Auto-discover repo agent configs">
+        <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
+      </SettingItem>
+    </div>
+  );
+}
+
+function EnvironmentSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Environment</h3>
+      <SettingItem label="Blueprint" description="Devbox initialization YAML">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Edit Blueprint</button>
+      </SettingItem>
+      <SettingItem label="Snapshots" description="Environment snapshot management">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Manage</button>
+      </SettingItem>
+    </div>
+  );
+}
+
+function KnowledgeSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Knowledge</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Add Note</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Three-layer knowledge system: System / User / Repo</p>
+    </div>
+  );
+}
+
+function PlaybooksSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Playbooks</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Create Playbook</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Reusable task templates for Agent automation</p>
+    </div>
+  );
+}
+
+function SecretsSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Secrets</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Add Secret</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Manage API Keys, passwords, and credentials (org/user/repo scope)</p>
+    </div>
+  );
+}
+
+function ReposSettings() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Repositories</h3>
+        <button className="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded-lg">Add Repository</button>
+      </div>
+      <p className="text-sm text-[var(--text-secondary)]">Manage connected Git repos, trigger DeepWiki indexing and CodeMap analysis</p>
+    </div>
+  );
+}
+
 function SecuritySettings() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">安全设置</h3>
-      <SettingItem label="安全模式" description="危险操作需要确认">
+      <h3 className="text-sm font-semibold mb-3">Security</h3>
+      <SettingItem label="Codex Security" description="Enterprise-grade code scanning">
         <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
       </SettingItem>
-      <SettingItem label="命令白名单" description="限制可执行的命令">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="ask">需要确认</option>
-          <option value="auto">自动执行</option>
-          <option value="deny">禁止执行</option>
-        </select>
-      </SettingItem>
-      <SettingItem label="敏感数据检测" description="检测输出中的密码/密钥">
+      <SettingItem label="OWASP LLM Top 10" description="AI-specific security rules">
         <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--accent)]" />
       </SettingItem>
-      <SettingItem label="网络访问" description="沙箱的网络访问权限">
-        <select className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-3 py-1 text-sm">
-          <option value="full">完全访问</option>
-          <option value="limited">受限访问</option>
-          <option value="none">禁止访问</option>
-        </select>
+      <SettingItem label="Command allowlist" description="Restrict executable commands">
+        <button className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-white/5">Configure</button>
       </SettingItem>
+      <SettingItem label="Authentication" description="JWT / OAuth / OIDC">
+        <SelectInput options={[{ value: "jwt", label: "JWT" }, { value: "oauth", label: "OAuth 2.0" }, { value: "oidc", label: "OIDC" }]} />
+      </SettingItem>
+    </div>
+  );
+}
+
+function AnalyticsSettings() {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Analytics</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { label: "LLM Calls", value: "1,284" },
+          { label: "Tool Calls", value: "3,456" },
+          { label: "Sessions", value: "89" },
+          { label: "Sandbox Usage", value: "42" },
+        ].map((s) => (
+          <div key={s.label} className="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="text-xs text-[var(--text-secondary)]">{s.label}</div>
+            <div className="text-xl font-bold mt-1">{s.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

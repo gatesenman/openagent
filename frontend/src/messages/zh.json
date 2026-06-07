@@ -13,9 +13,13 @@
   },
   "nav": {
     "sessions": "会话",
+    "ask": "提问",
+    "wiki": "Wiki",
+    "review": "审查",
+    "automations": "自动化",
+    "settings": "设置",
     "deepwiki": "DeepWiki",
     "codemaps": "CodeMap",
-    "settings": "设置",
     "newSession": "新建会话",
     "knowledge": "知识库",
     "playbooks": "任务模板",
@@ -23,7 +27,6 @@
     "secrets": "密钥管理",
     "blueprints": "环境蓝图",
     "repos": "仓库",
-    "automations": "自动化",
     "mcp": "MCP 市场",
     "apikeys": "API 密钥",
     "membership": "成员管理",
@@ -52,7 +55,10 @@
       "terminal": "终端",
       "editor": "编辑器",
       "changes": "变更",
-      "desktop": "桌面"
+      "desktop": "桌面",
+      "shell": "终端",
+      "ide": "IDE",
+      "agents": "智能体"
     },
     "statusValues": {
       "created": "已创建",

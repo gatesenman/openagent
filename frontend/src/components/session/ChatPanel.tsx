@@ -22,46 +22,51 @@ export function ChatPanel({ sessionId, messages, onSend }: ChatPanelProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* 消息列表 */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${
-              msg.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                msg.role === "user"
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
-              }`}
-            >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-              <span className="text-xs opacity-50 mt-1 block">
-                {new Date(msg.created_at).toLocaleTimeString()}
-              </span>
+          <div key={msg.id} className="flex gap-2">
+            {/* Avatar */}
+            <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold ${
+              msg.role === "user"
+                ? "bg-[var(--accent)]/20 text-[var(--accent)]"
+                : "bg-emerald-500/20 text-emerald-400"
+            }`}>
+              {msg.role === "user" ? "U" : "A"}
+            </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[11px] font-medium text-[var(--text-secondary)]">
+                  {msg.role === "user" ? "You" : "Agent"}
+                </span>
+                <span className="text-[10px] text-[var(--text-secondary)]/60">
+                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+              <div className="text-[13px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap">
+                {msg.content}
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* 输入区域 */}
-      <div className="border-t border-[var(--border)] p-3">
-        <div className="flex gap-2">
+      {/* Input */}
+      <div className="border-t border-[var(--border)] p-2">
+        <div className="flex gap-1.5">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder={t("placeholder")}
-            className="flex-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[var(--accent)]"
+            className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-xs focus:outline-none focus:border-[var(--accent)]/40 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-md text-xs font-medium disabled:opacity-30 transition-colors"
           >
             {t("send")}
           </button>

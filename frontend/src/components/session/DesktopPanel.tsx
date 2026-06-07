@@ -2,17 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-/**
- * 桌面面板 / Desktop panel.
- *
- * Phase 1: noVNC WebSocket 连接骨架 + 截屏显示
- * Phase 2: 完整 VNC/noVNC 集成 + KVM 虚拟机桌面
- */
-
 interface DesktopFrame {
   timestamp: number;
   type: "screenshot" | "stream";
-  data: string; // base64 image or URL
+  data: string;
 }
 
 export function DesktopPanel({ sessionId }: { sessionId?: string }) {
@@ -20,23 +13,15 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
   const [connecting, setConnecting] = useState(false);
   const [resolution, setResolution] = useState("1920x1080");
   const [frames, setFrames] = useState<DesktopFrame[]>([]);
-  const [quality, setQuality] = useState(80);
   const [isRecording, setIsRecording] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const connect = useCallback(async () => {
     setConnecting(true);
     try {
-      // Phase 1: 模拟连接流程
-      await new Promise((r) => setTimeout(r, 1500));
+      await new Promise((r) => setTimeout(r, 1200));
       setConnected(true);
-
-      // 模拟接收桌面帧
-      setFrames([{
-        timestamp: Date.now(),
-        type: "screenshot",
-        data: "",
-      }]);
+      setFrames([{ timestamp: Date.now(), type: "screenshot", data: "" }]);
     } catch {
       setConnected(false);
     } finally {
@@ -49,152 +34,117 @@ export function DesktopPanel({ sessionId }: { sessionId?: string }) {
     setFrames([]);
   }, []);
 
-  const takeScreenshot = useCallback(async () => {
-    if (!sessionId) return;
-    setFrames((prev) => [
-      ...prev,
-      { timestamp: Date.now(), type: "screenshot", data: "" },
-    ]);
-  }, [sessionId]);
-
   useEffect(() => {
-    return () => {
-      disconnect();
-    };
+    return () => { disconnect(); };
   }, [disconnect]);
 
   if (!connected) {
     return (
-      <div className="flex h-full flex-col items-center justify-center bg-zinc-950 p-8">
-        <div className="mb-4 text-4xl font-mono text-[var(--text-secondary)]">[Desktop]</div>
-        <h3 className="mb-2 text-lg font-semibold text-white">远程桌面</h3>
-        <p className="mb-4 max-w-md text-center text-sm text-zinc-400">
-          通过 noVNC 连接沙箱虚拟环境的桌面，实时观看 Agent 的 GUI 操作。
+      <div className="flex h-full flex-col items-center justify-center bg-[var(--bg-primary)] p-8">
+        <div className="w-16 h-16 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center mb-4">
+          <svg className="w-7 h-7 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+        </div>
+        <h3 className="text-sm font-medium text-[var(--text-primary)] mb-1">Virtual Desktop</h3>
+        <p className="text-[11px] text-[var(--text-secondary)] text-center max-w-xs mb-5">
+          Connect to the sandbox virtual environment via noVNC. Watch Agent operate in real-time.
         </p>
 
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-2 mb-4">
           <select
             value={resolution}
             onChange={(e) => setResolution(e.target.value)}
-            className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-zinc-300"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-2 py-1 text-[11px] text-[var(--text-secondary)]"
           >
-            <option value="1920x1080">1920x1080 (FHD)</option>
-            <option value="1280x720">1280x720 (HD)</option>
+            <option value="1920x1080">1920x1080</option>
+            <option value="1280x720">1280x720</option>
             <option value="1024x768">1024x768</option>
           </select>
-          <input
-            type="range"
-            min={20}
-            max={100}
-            value={quality}
-            onChange={(e) => setQuality(Number(e.target.value))}
-            className="w-20"
-          />
-          <span className="text-xs text-zinc-500">Q:{quality}%</span>
         </div>
 
         <button
           onClick={connect}
           disabled={connecting}
-          className="px-6 py-2 bg-[var(--accent)] text-white rounded-lg text-sm hover:bg-[var(--accent-hover)] disabled:opacity-50"
+          className="px-5 py-1.5 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-hover)] disabled:opacity-40 transition-colors"
         >
-          {connecting ? "连接中..." : "连接桌面"}
+          {connecting ? "Connecting..." : "Connect Desktop"}
         </button>
-
-        <div className="mt-8 rounded-lg border border-zinc-700 bg-zinc-900 p-4 text-sm text-zinc-500 max-w-md">
-          <div className="mb-2 font-medium text-zinc-400">功能说明：</div>
-          <ul className="list-disc pl-4 space-y-1">
-            <li>noVNC 实时桌面流 (WebSocket)</li>
-            <li>鼠标/键盘远程交互</li>
-            <li>截屏 &amp; 录屏回放</li>
-            <li>浏览器操作可视化 (CDP)</li>
-            <li>分辨率 &amp; 画质自适应</li>
-          </ul>
-        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-black">
+    <div className="flex flex-col h-full bg-[#0a0a12]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-xs text-zinc-400">已连接</span>
-          </div>
-          <span className="text-xs text-zinc-600">{resolution}</span>
-          <span className="text-xs text-zinc-600">Q:{quality}%</span>
-        </div>
+      <div className="h-[28px] flex items-center justify-between px-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)]">
         <div className="flex items-center gap-2">
-          <button
-            onClick={takeScreenshot}
-            className="text-xs px-2 py-1 bg-zinc-800 text-zinc-300 rounded hover:bg-zinc-700"
-            title="截屏"
-          >
+          <span className="w-[5px] h-[5px] rounded-full bg-[var(--success)]" />
+          <span className="text-[10px] text-[var(--text-secondary)]">Connected</span>
+          <span className="text-[10px] text-[var(--text-secondary)]/50">{resolution}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <ToolbarBtn onClick={() => setFrames(prev => [...prev, { timestamp: Date.now(), type: "screenshot", data: "" }])}>
             Capture
-          </button>
-          <button
-            onClick={() => setIsRecording(!isRecording)}
-            className={`text-xs px-2 py-1 rounded ${
-              isRecording
-                ? "bg-red-600 text-white"
-                : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-            }`}
-            title={isRecording ? "停止录制" : "开始录制"}
-          >
+          </ToolbarBtn>
+          <ToolbarBtn onClick={() => setIsRecording(!isRecording)} active={isRecording}>
             {isRecording ? "Stop" : "Record"}
-          </button>
-          <button
-            onClick={() => {
-              // Send Ctrl+Alt+Del
-            }}
-            className="text-xs px-2 py-1 bg-zinc-800 text-zinc-300 rounded hover:bg-zinc-700"
-            title="Ctrl+Alt+Del"
-          >
-            CAD
-          </button>
-          <button
-            onClick={disconnect}
-            className="text-xs px-2 py-1 bg-red-900/50 text-red-400 rounded hover:bg-red-900/80"
-          >
-            断开
-          </button>
+          </ToolbarBtn>
+          <ToolbarBtn onClick={disconnect} danger>
+            Disconnect
+          </ToolbarBtn>
         </div>
       </div>
 
       {/* Desktop canvas */}
-      <div
-        ref={canvasRef}
-        className="flex-1 flex items-center justify-center cursor-crosshair"
-        style={{ background: "#1a1a2e" }}
-      >
+      <div ref={canvasRef} className="flex-1 flex items-center justify-center cursor-crosshair">
         <div className="text-center">
-          <div className="text-4xl mb-4 opacity-30 font-mono">[Desktop]</div>
-          <p className="text-zinc-600 text-sm">
-            桌面流已连接 — Agent 正在沙箱中操作
+          <svg className="w-12 h-12 text-[var(--text-secondary)]/20 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+          <p className="text-[11px] text-[var(--text-secondary)]/40">
+            Desktop stream connected - Agent operating in sandbox
           </p>
-          <p className="text-zinc-700 text-xs mt-1">
-            {frames.length > 0
-              ? `已接收 ${frames.length} 帧`
-              : "等待桌面帧..."}
-          </p>
+          {frames.length > 0 && (
+            <p className="text-[10px] text-[var(--text-secondary)]/30 mt-1">
+              {frames.length} frame(s) received
+            </p>
+          )}
           {isRecording && (
-            <div className="mt-3 flex items-center justify-center gap-2 text-red-500 text-xs">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              录制中...
+            <div className="mt-2 flex items-center justify-center gap-1 text-red-400 text-[10px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+              Recording
             </div>
           )}
         </div>
       </div>
 
-      {/* Keyboard shortcuts */}
-      <div className="px-3 py-1 bg-zinc-900 border-t border-zinc-800 text-xs text-zinc-600 flex items-center gap-4">
-        <span>F11: 全屏</span>
-        <span>Ctrl+Alt+Del: 系统操作</span>
-        <span>Ctrl+Shift+S: 截屏</span>
+      {/* Status bar */}
+      <div className="h-[22px] px-2 bg-[var(--bg-tertiary)] border-t border-[var(--border)] text-[10px] text-[var(--text-secondary)]/50 flex items-center gap-4">
+        <span>F11: Fullscreen</span>
+        <span>Ctrl+Shift+S: Screenshot</span>
       </div>
     </div>
+  );
+}
+
+function ToolbarBtn({ children, onClick, active, danger }: {
+  children: React.ReactNode; onClick: () => void; active?: boolean; danger?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
+        danger ? "text-red-400 hover:bg-red-500/10" :
+        active ? "bg-red-500/20 text-red-300" :
+        "text-[var(--text-secondary)] hover:bg-white/[0.04]"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

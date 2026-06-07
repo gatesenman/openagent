@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import type { Session } from "@/lib/api";
 
 const statusColors: Record<string, string> = {
-  created: "bg-gray-400",
+  created: "bg-zinc-400",
   running: "bg-[var(--success)]",
   paused: "bg-[var(--warning)]",
-  completed: "bg-blue-400",
+  completed: "bg-sky-400",
   failed: "bg-[var(--error)]",
 };
 
@@ -19,38 +19,37 @@ export function SessionList() {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
-    // mock 数据
     setSessions([
       {
         id: "demo-1",
-        title: "实现用户登录模块",
+        title: "Implement user auth module",
         status: "running",
         mode: "cloud",
         model: "gpt-4o",
         platform: "linux",
-        language: "zh",
+        language: "en",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
       {
         id: "demo-2",
-        title: "修复API性能问题",
+        title: "Fix API performance issue",
         status: "completed",
         mode: "localhost",
         model: "deepseek-chat",
         platform: "linux",
-        language: "zh",
+        language: "en",
         created_at: new Date(Date.now() - 3600000).toISOString(),
         updated_at: new Date(Date.now() - 1800000).toISOString(),
       },
       {
         id: "demo-3",
-        title: "添加单元测试",
+        title: "Add unit tests",
         status: "created",
         mode: "cascade",
         model: "qwen-plus",
         platform: "linux",
-        language: "zh",
+        language: "en",
         created_at: new Date(Date.now() - 7200000).toISOString(),
         updated_at: new Date(Date.now() - 7200000).toISOString(),
       },
@@ -64,35 +63,28 @@ export function SessionList() {
           key={session.id}
           onClick={() => setSelected(session.id)}
           className={cn(
-            "w-full px-4 py-3 text-left border-b border-[var(--border)] transition-colors",
+            "w-full px-3 py-2.5 text-left border-b border-[var(--border-subtle)] transition-all duration-100",
             selected === session.id
-              ? "bg-[var(--accent)]/10"
-              : "hover:bg-white/5"
+              ? "bg-[var(--accent-dim)]"
+              : "hover:bg-white/[0.02]"
           )}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <span
-              className={cn(
-                "w-2 h-2 rounded-full",
-                statusColors[session.status] || "bg-gray-400"
-              )}
-            />
-            <span className="font-medium text-sm truncate">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className={cn("w-[5px] h-[5px] rounded-full flex-shrink-0", statusColors[session.status] || "bg-zinc-500")} />
+            <span className="text-[12px] font-medium truncate text-[var(--text-primary)]">
               {session.title}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-            <span>{t(`mode.${session.mode}`)}</span>
-            <span>·</span>
-            <span>{session.model}</span>
-            <span>·</span>
-            <span>{t(`status.${session.status}`)}</span>
+          <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)] pl-[11px]">
+            <span>{session.mode}</span>
+            <span className="opacity-30">|</span>
+            <span className="font-mono">{session.model}</span>
           </div>
         </button>
       ))}
 
       {sessions.length === 0 && (
-        <div className="p-4 text-center text-[var(--text-secondary)] text-sm">
+        <div className="p-4 text-center text-[var(--text-secondary)] text-[11px]">
           {t("noSessions")}
         </div>
       )}

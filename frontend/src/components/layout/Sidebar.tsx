@@ -5,35 +5,16 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
-  IconChat, IconRefresh, IconBook, IconGlobe, IconBulb, IconClipboard,
-  IconFolder, IconZap, IconPuzzle, IconKey, IconServer, IconLock,
-  IconUsers, IconChart, IconSave, IconCalendar, IconShield,
-  IconTrend, IconRocket, IconGear, IconPackage,
+  IconChat, IconSearch, IconBook, IconShield, IconZap, IconGear,
 } from "@/components/icons/Icons";
 import { ReactNode } from "react";
 
 const navItems: { key: string; href: string; icon: ReactNode }[] = [
-  { key: "sessions", href: "/sessions", icon: <IconChat className="w-4 h-4" /> },
-  { key: "batch", href: "/batch", icon: <IconRefresh className="w-4 h-4" /> },
-  { key: "deepwiki", href: "/deepwiki", icon: <IconBook className="w-4 h-4" /> },
-  { key: "codemaps", href: "/codemaps", icon: <IconGlobe className="w-4 h-4" /> },
-  { key: "knowledge", href: "/knowledge", icon: <IconBulb className="w-4 h-4" /> },
-  { key: "playbooks", href: "/playbooks", icon: <IconClipboard className="w-4 h-4" /> },
-  { key: "repos", href: "/repos", icon: <IconFolder className="w-4 h-4" /> },
-  { key: "automations", href: "/automations", icon: <IconZap className="w-4 h-4" /> },
-  { key: "mcp", href: "/mcp", icon: <IconPuzzle className="w-4 h-4" /> },
-  { key: "secrets", href: "/secrets", icon: <IconKey className="w-4 h-4" /> },
-  { key: "blueprints", href: "/blueprints", icon: <IconServer className="w-4 h-4" /> },
-  { key: "apikeys", href: "/api-keys", icon: <IconLock className="w-4 h-4" /> },
-  { key: "membership", href: "/membership", icon: <IconUsers className="w-4 h-4" /> },
-  { key: "billing", href: "/billing", icon: <IconChart className="w-4 h-4" /> },
-  { key: "cicd", href: "/cicd", icon: <IconSave className="w-4 h-4" /> },
-  { key: "snapshots", href: "/snapshots", icon: <IconPackage className="w-4 h-4" /> },
-  { key: "schedules", href: "/schedules", icon: <IconCalendar className="w-4 h-4" /> },
-  { key: "security", href: "/security", icon: <IconShield className="w-4 h-4" /> },
-  { key: "analytics", href: "/analytics", icon: <IconTrend className="w-4 h-4" /> },
-  { key: "onboarding", href: "/onboarding", icon: <IconRocket className="w-4 h-4" /> },
-  { key: "settings", href: "/settings", icon: <IconGear className="w-4 h-4" /> },
+  { key: "sessions", href: "/sessions", icon: <IconChat className="w-[18px] h-[18px]" /> },
+  { key: "ask", href: "/ask", icon: <IconSearch className="w-[18px] h-[18px]" /> },
+  { key: "wiki", href: "/deepwiki", icon: <IconBook className="w-[18px] h-[18px]" /> },
+  { key: "review", href: "/review", icon: <IconShield className="w-[18px] h-[18px]" /> },
+  { key: "automations", href: "/automations", icon: <IconZap className="w-[18px] h-[18px]" /> },
 ];
 
 export function Sidebar() {
@@ -41,26 +22,16 @@ export function Sidebar() {
   const t = useTranslations("nav");
 
   return (
-    <aside className="w-56 h-screen flex flex-col bg-[var(--sidebar-bg)] border-r border-[var(--border)]">
-      <div className="p-4 border-b border-[var(--border)]">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            OpenAgent
-          </span>
+    <aside className="w-[52px] h-screen flex flex-col bg-[var(--sidebar-bg)] border-r border-[var(--border)] items-center select-none">
+      {/* Logo mark */}
+      <div className="h-[42px] flex items-center justify-center w-full border-b border-[var(--border)]">
+        <Link href="/" className="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--accent)] hover:bg-[var(--accent-hover)] transition-colors">
+          <span className="text-[11px] font-bold text-white tracking-tight">OA</span>
         </Link>
       </div>
 
-      <div className="p-3">
-        <Link
-          href="/sessions?new=true"
-          className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-colors"
-        >
-          <span>+</span>
-          <span>{t("newSession")}</span>
-        </Link>
-      </div>
-
-      <nav className="flex-1 px-2 py-1 space-y-0.5 overflow-y-auto">
+      {/* Navigation */}
+      <nav className="flex-1 flex flex-col items-center pt-3 gap-1 w-full">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -69,25 +40,38 @@ export function Sidebar() {
             <Link
               key={item.key}
               href={item.href}
+              title={t(item.key)}
               className={cn(
-                "flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors",
+                "relative flex items-center justify-center w-9 h-9 rounded-md transition-all duration-150",
                 isActive
-                  ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                  : "text-[var(--sidebar-text)] hover:bg-white/5"
+                  ? "bg-[var(--accent-dim)] text-[var(--accent)]"
+                  : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-active)] hover:bg-white/[0.04]"
               )}
             >
+              {isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 bg-[var(--accent)] rounded-r" />
+              )}
               {item.icon}
-              <span>{t(item.key)}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-3 border-t border-[var(--border)]">
-        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-          <span className="w-2 h-2 rounded-full bg-[var(--success)]" />
-          <span>Agent Ready</span>
-        </div>
+      {/* Bottom settings */}
+      <div className="pb-3 flex flex-col items-center gap-1">
+        <Link
+          href="/settings"
+          title={t("settings")}
+          className={cn(
+            "flex items-center justify-center w-9 h-9 rounded-md transition-all duration-150",
+            pathname?.startsWith("/settings")
+              ? "bg-[var(--accent-dim)] text-[var(--accent)]"
+              : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-active)] hover:bg-white/[0.04]"
+          )}
+        >
+          <IconGear className="w-[18px] h-[18px]" />
+        </Link>
+        <div className="w-[6px] h-[6px] rounded-full bg-[var(--success)]" title="Agent Ready" />
       </div>
     </aside>
   );
