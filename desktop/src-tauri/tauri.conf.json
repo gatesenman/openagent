@@ -1,19 +1,19 @@
 {
-  "$schema": "https://raw.githubusercontent.com/nicegui/nicegui/main/schemas/tauri.conf.json",
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "OpenAgent",
   "version": "0.1.0",
   "identifier": "com.openagent.desktop",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:3000",
-    "beforeBuildCommand": "",
-    "beforeDevCommand": ""
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev"
   },
   "app": {
     "title": "OpenAgent",
     "windows": [
       {
-        "title": "OpenAgent - AI 驱动的全生命周期开发平台",
+        "title": "OpenAgent - AI \u9a71\u52a8\u7684\u5168\u751f\u547d\u5468\u671f\u5f00\u53d1\u5e73\u53f0",
         "width": 1400,
         "height": 900,
         "minWidth": 1024,
