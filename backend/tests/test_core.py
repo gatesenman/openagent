@@ -119,3 +119,35 @@ def test_jsonrpc():
     d = resp.to_dict()
     assert d["result"]["result"] == "ok"
     assert d["id"] == "1"
+
+
+
+def test_llm_api_key_from_vendor_fallback(monkeypatch):
+    """Vendor keys fill in LLM_API_KEY / LLM_BASE_URL when those are empty."""
+    monkeypatch.setenv("LLM_PROVIDER", "deepseek")
+    monkeypatch.setenv("LLM_API_KEY", "")
+    monkeypatch.setenv("LLM_BASE_URL", "")
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test-deepseek")
+    monkeypatch.delenv("DEEPSEEK_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    from app.core.config import Settings
+
+    s = Settings(_env_file=None)
+    assert s.LLM_API_KEY == "sk-test-deepseek"
+    assert s.LLM_BASE_URL == "https://api.deepseek.com/v1"
+
+
+def test_llm_api_key_takes_precedence(monkeypatch):
+    """Explicit LLM_API_KEY / LLM_BASE_URL win over vendor-specific keys."""
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("LLM_API_KEY", "sk-primary")
+    monkeypatch.setenv("LLM_BASE_URL", "https://example.invalid/v1")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-should-be-ignored")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+
+    from app.core.config import Settings
+
+    s = Settings(_env_file=None)
+    assert s.LLM_API_KEY == "sk-primary"
+    assert s.LLM_BASE_URL == "https://example.invalid/v1"
