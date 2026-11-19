@@ -85,7 +85,7 @@ export default function App() {
           padding: "8px 16px",
           backgroundColor: "#111127",
           borderBottom: "1px solid #1e1e3a",
-          WebkitAppRegion: "drag" as never,
+          WebkitAppRegion: "drag",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
