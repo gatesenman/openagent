@@ -52,8 +52,8 @@ test: test-backend test-frontend ## 运行所有测试
 test-backend: ## 运行后端测试
 	cd backend && python -m pytest tests/ -v
 
-test-frontend: ## 运行前端测试
-	cd frontend && npm test
+test-frontend: ## Typecheck and build the desktop client (the Next.js app has no unit tests yet)
+	cd desktop && npm run test:gate
 
 # ==================== 数据库 ====================
 
