@@ -67,6 +67,57 @@ def api_request(method: str, path: str, data: dict | None = None) -> dict:
         sys.exit(1)
 
 
+
+NEW_PROJECT_MANIFEST = "openagent.project.json"
+NEW_PROJECT_TEST = """import unittest
+
+
+class TestPlaceholder(unittest.TestCase):
+    def test_project_is_ready(self):
+        self.assertTrue(True)
+
+
+if __name__ == "__main__":
+    unittest.main()
+"""
+
+NEW_PROJECT_REQUIREMENTS = """# Starter dependencies for a new OpenAgent project.
+# Add runtime packages as the project grows.
+"""
+
+
+def write_new_project(root: Path, name: str) -> dict:
+    """Write a verifiable new-project tree. Does not call a remote API."""
+    root = root.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    manifest = {
+        "name": name,
+        "kind": "openagent-project",
+        "version": "0.1.0",
+    }
+    (root / NEW_PROJECT_MANIFEST).write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    (root / "requirements.txt").write_text(NEW_PROJECT_REQUIREMENTS, encoding="utf-8")
+    tests = root / "tests"
+    tests.mkdir(exist_ok=True)
+    (tests / "test_placeholder.py").write_text(NEW_PROJECT_TEST, encoding="utf-8")
+    readme = root / "README.md"
+    if not readme.exists():
+        readme.write_text(f"# {name}\n\nScaffolded by OpenAgent new-project.\n", encoding="utf-8")
+    return manifest
+
+
+def cmd_new_project(args):
+    """Create a new project tree with a manifest, requirements stub, and a passing test."""
+    target = Path(args.path)
+    name = args.name or target.name
+    manifest = write_new_project(target, name)
+    print(f"Created OpenAgent project: {target.resolve()}")
+    print(f"  manifest: {NEW_PROJECT_MANIFEST}")
+    print(f"  name: {manifest['name']}")
+    print("Run: python -m unittest discover -s tests")
+
 def cmd_init(args):
     """初始化项目."""
     print("🚀 OpenAgent 项目初始化")
@@ -312,6 +363,10 @@ def main():
     # init
     subparsers.add_parser("init", help="初始化项目")
 
+    p_new_project = subparsers.add_parser("new-project", help="创建一个可验证的新项目骨架")
+    p_new_project.add_argument("path", help="新项目目录")
+    p_new_project.add_argument("--name", help="项目名称（默认使用目录名）")
+
     # start
     p_start = subparsers.add_parser("start", help="启动服务")
     p_start.add_argument("--mode", choices=["localhost", "cascade", "cloud"])
@@ -362,6 +417,7 @@ def main():
 
     commands = {
         "init": cmd_init,
+        "new-project": cmd_new_project,
         "start": cmd_start,
         "session": lambda a: {
             "new": cmd_session_new,
