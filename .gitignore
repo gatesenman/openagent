@@ -50,3 +50,10 @@ htmlcov/
 # Build
 *.tar.gz
 *.whl
+
+# Additional hygiene
+.env.*.local
+target/
+coverage/
+!.env.example
+!.env.example.*
